@@ -12,6 +12,7 @@ import {
   // Outlet,
 } from 'react-router-dom'
 
+// login & signup pages
 const NavA = () => {
   return (
     <>
@@ -62,14 +63,14 @@ function App () {
     return <SignUp onSuccess={manageTokenSet} />
   }
   const Home = () => {
-    return <Dashboard/>
+    return <Dashboard token={token} />
   }
 
   return (
     <>
       <header>
         <BrowserRouter>
-          {token
+          {token !== null
             ? (
             <>
               <NavB />

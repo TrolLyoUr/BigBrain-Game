@@ -49,10 +49,10 @@ function Dashboard ({ token }) {
       Dashboard! list games...
       <br />
       {quizzes.map((quiz) => (
-        <>
+        <React.Fragment key={quiz.id}>
           <b>{quiz.name}</b>
           <br />
-        </>
+        </React.Fragment>
       ))}
       <br />
       <hr />
