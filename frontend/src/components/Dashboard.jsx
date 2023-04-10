@@ -1,10 +1,10 @@
 import React from 'react'
+import { Link } from 'react-router-dom'
 import Button from './Button'
 
 function Dashboard ({ token }) {
   const [newGameShow, setNewGameShow] = React.useState(false)
   const [quizzes, setQuizzes] = React.useState([])
-
   const [newQuizName, setNewQuizName] = React.useState('')
 
   async function fetchAllQuizzes () {
@@ -44,19 +44,44 @@ function Dashboard ({ token }) {
     await fetchAllQuizzes()
   }
 
+  async function deleteGame (id) {
+    await fetch(`http://localhost:5005/admin/quiz/${id}`, {
+      method: 'DELETE',
+      headers: {
+        'Content-type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+    })
+    await fetchAllQuizzes()
+  }
+
   return (
     <>
-      Dashboard! list games...
-      <br />
-      {quizzes.map((quiz) => (
-        <React.Fragment key={quiz.id}>
-          <b>{quiz.name}</b>
-          <br />
-        </React.Fragment>
-      ))}
-      <br />
+      <h1>Dashboard</h1>
+      <div>
+        {quizzes.map((quiz) => (
+          <div key={quiz.id} style={{ marginBottom: '1rem' }}>
+            <h3>
+              <Link to={`/edit/${quiz.id}`}>{quiz.name}</Link>
+            </h3>
+            <p>
+              Questions: {quiz.questions ? quiz.questions.length : 0} | Total
+              Time:{' '}
+              {quiz.questions
+                ? quiz.questions.reduce(
+                  (acc, question) => acc + question.time,
+                  0
+                )
+                : 0}{' '}
+              seconds
+            </p>
+            <Button variant="contained" onClick={() => deleteGame(quiz.id)}>
+              Delete
+            </Button>
+          </div>
+        ))}
+      </div>
       <hr />
-      <br />
       <Button variant="contained" onClick={() => setNewGameShow(!newGameShow)}>
         {newGameShow ? 'Hide' : 'Show'} Create New Game
       </Button>
