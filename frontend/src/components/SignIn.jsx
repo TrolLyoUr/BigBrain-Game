@@ -1,8 +1,10 @@
 import React from 'react'
+import { useNavigate } from 'react-router-dom'
 
 function SignIn ({ onSuccess }) {
   const [email, setEmail] = React.useState('')
   const [password, setPassword] = React.useState('')
+  const navigate = useNavigate()
 
   async function login () {
     try {
@@ -17,14 +19,15 @@ function SignIn ({ onSuccess }) {
         }),
       })
 
-      if (!response.ok) {
+      if (response.ok) {
+        const { token } = await response.json()
+        onSuccess(token)
+        // Success: lead to dashboard
+        navigate('/dashboard')
+      } else {
         throw new Error(`An error occurred: ${response.statusText}`)
       }
-
-      const data = await response.json()
-      onSuccess(data.token)
     } catch (error) {
-      // console.error('Error during login:', error)
       window.alert('Error during login: ' + error.message)
     }
   }

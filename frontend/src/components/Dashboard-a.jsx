@@ -1,8 +1,10 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 import Button from './Button'
+import { useAppContext } from '../App'
 
-function Dashboard ({ token }) {
+function Dashboard () {
+  const { token } = useAppContext()
   const [newGameShow, setNewGameShow] = React.useState(false)
   const [quizzes, setQuizzes] = React.useState([])
   const [newQuizName, setNewQuizName] = React.useState('')
@@ -75,6 +77,9 @@ function Dashboard ({ token }) {
                 : 0}{' '}
               seconds
             </p>
+            <Button variant="contained" onClick={() => deleteGame(quiz.id)}>
+              Delete
+            </Button>
             <Button variant="contained" onClick={() => deleteGame(quiz.id)}>
               Delete
             </Button>

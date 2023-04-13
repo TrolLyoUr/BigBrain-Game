@@ -1,100 +1,92 @@
-import React from 'react'
+import React, { createContext, useContext, useEffect, useState } from 'react'
+import {
+  createBrowserRouter,
+  Outlet,
+  Link,
+  useNavigate,
+  RouterProvider,
+} from 'react-router-dom'
+
 import SignIn from './components/SignIn'
 import SignUp from './components/SignUp'
 import Dashboard from './components/Dashboard'
-import {
-  BrowserRouter,
-  Routes,
-  Route,
-  Link,
-  // useParams,
-  // useNavigate,
-  // Outlet,
-} from 'react-router-dom'
 
-// login & signup pages
-const NavA = () => {
-  return (
-    <>
-      <span>
-        <Link to="/">SignIn</Link>
-      </span>
-      &nbsp;|&nbsp;
-      <span>
-        <Link to="/signup">SignUp</Link>
-      </span>
-    </>
-  )
-}
-const NavB = () => {
-  return (
-    <>
-      <span>
-        <Link to="/dashboard">Dashboard</Link>
-      </span>
-    </>
-  )
-}
+export const AppContext = createContext()
 
 function App () {
-  // const [page, setPage] = React.useState('signup')
-  const [token, setToken] = React.useState(null)
+  const [token, setToken] = useState(null)
 
-  function manageTokenSet (token) {
+  const manageTokenSet = (token) => {
     setToken(token)
     localStorage.setItem('token', token)
   }
 
-  function logout () {
-    setToken(null)
-    localStorage.removeItem('token')
-  }
-
-  React.useEffect(function () {
+  useEffect(() => {
     if (localStorage.getItem('token')) {
       setToken(localStorage.getItem('token'))
     }
   }, [])
 
-  const LogIn = () => {
-    return <SignIn onSuccess={manageTokenSet} />
-  }
-  const Register = () => {
-    return <SignUp onSuccess={manageTokenSet} />
-  }
-  const Home = () => {
-    return <Dashboard token={token} />
+  const Routers = createBrowserRouter([
+    {
+      element: <NavLayout />,
+      children: [
+        { path: '/', element: <SignIn onSuccess={manageTokenSet} /> },
+        { path: '/signup', element: <SignUp onSuccess={manageTokenSet} /> },
+      ],
+    },
+    {
+      element: <DashboardLayout />,
+      children: [{ path: '/dashboard', element: <Dashboard /> }],
+    },
+  ])
+
+  return (
+    <>
+      <AppContext.Provider value={{ token, setToken }}>
+        <RouterProvider router={Routers}>
+          <Outlet />
+        </RouterProvider>
+      </AppContext.Provider>
+    </>
+  )
+}
+
+function NavLayout () {
+  return (
+    <>
+      <nav>
+        <span>
+          <Link to="/">SignIn</Link>
+        </span>
+        &nbsp;|&nbsp;
+        <span>
+          <Link to="/signup">SignUp</Link>
+        </span>
+      </nav>
+      <Outlet />
+    </>
+  )
+}
+
+function DashboardLayout () {
+  const { setToken } = useContext(AppContext)
+  const navigate = useNavigate()
+
+  const logout = () => {
+    setToken(null)
+    localStorage.removeItem('token')
+    navigate('/')
   }
 
   return (
     <>
-      <header>
-        <BrowserRouter>
-          {token !== null
-            ? (
-            <>
-              <NavB />
-              &nbsp;
-              <a href="/" onClick={logout}>
-                Logout
-              </a>
-              <Routes>
-                <Route path="/dashboard" element={<Home />} />
-              </Routes>
-            </>
-              )
-            : (
-            <>
-              <NavA />
-              <Routes>
-                <Route path="/" element={<LogIn />} />
-                &nbsp;|&nbsp;
-                <Route path="/signup" element={<Register />} />
-              </Routes>
-            </>
-              )}
-        </BrowserRouter>
-      </header>
+      <nav>
+        <span>
+          <button onClick={logout}>Logout</button>
+        </span>
+      </nav>
+      <Outlet />
     </>
   )
 }
