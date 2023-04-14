@@ -10,6 +10,7 @@ import {
 import SignIn from './components/SignIn'
 import SignUp from './components/SignUp'
 import Dashboard from './components/Dashboard'
+import EditBigBrainGame from './components/EditBigBrainGame'
 
 export const AppContext = createContext()
 
@@ -37,7 +38,10 @@ function App () {
     },
     {
       element: <DashboardLayout />,
-      children: [{ path: '/dashboard', element: <Dashboard /> }],
+      children: [
+        { path: '/dashboard', element: <Dashboard /> },
+        { path: '/edit/:gameId', element: <EditBigBrainGame/> },
+      ],
     },
   ])
 
