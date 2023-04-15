@@ -1,16 +1,24 @@
-import React, { createContext, useContext, useEffect, useState } from 'react'
+import React, {
+  createContext,
+  // useContext,
+  useEffect,
+  useState
+} from 'react'
 import {
   createBrowserRouter,
   Outlet,
   Link,
-  useNavigate,
+  // useNavigate,
   RouterProvider,
 } from 'react-router-dom'
+// import api from './api'
 
 import SignIn from './components/SignIn'
 import SignUp from './components/SignUp'
+import Logout from './components/Logout'
 import Dashboard from './components/Dashboard'
 import EditBigBrainGame from './components/EditBigBrainGame'
+import EditQuestion from './components/EditQuestion'
 
 export const AppContext = createContext()
 
@@ -40,7 +48,11 @@ function App () {
       element: <DashboardLayout />,
       children: [
         { path: '/dashboard', element: <Dashboard /> },
-        { path: '/edit/:gameId', element: <EditBigBrainGame/> },
+        { path: '/edit/game/:gameId', element: <EditBigBrainGame /> },
+        {
+          path: '/edit/game/:gameId/question/:questionId',
+          element: <EditQuestion />,
+        },
       ],
     },
   ])
@@ -74,20 +86,20 @@ function NavLayout () {
 }
 
 function DashboardLayout () {
-  const { setToken } = useContext(AppContext)
-  const navigate = useNavigate()
+  // const { token, setToken } = useContext(AppContext)
+  // const navigate = useNavigate()
 
-  const logout = () => {
-    setToken(null)
-    localStorage.removeItem('token')
-    navigate('/')
-  }
+  // const logout = () => {
+  //   setToken(null)
+  //   localStorage.removeItem('token')
+  //   navigate('/')
+  // }
 
   return (
     <>
       <nav>
         <span>
-          <button onClick={logout}>Logout</button>
+          <Logout />
         </span>
       </nav>
       <Outlet />
