@@ -7,6 +7,10 @@ import { Link } from 'react-router-dom'
 const Dashboard = () => {
   const { token } = useContext(AppContext)
   const [gamesList, setGamesList] = useState([])
+  //
+  const [showModal, setShowModal] = useState(false)
+  const [sessionId, setSessionId] = useState(null)
+  const [copyLink, setCopyLink] = useState('')
 
   useEffect(() => {
     fetchGamesList()
@@ -40,7 +44,7 @@ const Dashboard = () => {
 
         // Wait for all promises to resolve and set the games list
         const gamesWithQuestions = await Promise.all(gamePromises)
-        // console.log(gamesWithQuestions)
+        console.log('dashboard: ', gamesWithQuestions)
         setGamesList(gamesWithQuestions)
       } else {
         console.error('Error: response data is not an array')
@@ -84,7 +88,6 @@ const Dashboard = () => {
         }
       )
       // ---
-      // console.log('New game data:', newGame.data)
       // setGamesList([...gamesList, newGame.data])
       fetchGamesList()
     } catch (error) {
@@ -150,6 +153,45 @@ const Dashboard = () => {
     }
   }
 
+  const copyToClipboard = async (text) => {
+    try {
+      await navigator.clipboard.writeText(text)
+      alert('Link copied to clipboard!')
+    } catch (err) {
+      alert('Failed to copy link to clipboard.')
+    }
+  }
+
+  const startGame = async (gameId) => {
+    try {
+      await api.post(
+        `/admin/quiz/${gameId}/start`,
+        {},
+        {
+          headers: {
+            'Content-type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      )
+
+      const gameResponse = await api.get(`/admin/quiz/${gameId}`, {
+        headers: {
+          'Content-type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      })
+
+      const ActiveSessionId = gameResponse.data.active
+      const newCopyLink = `${window.location.origin}/play/${ActiveSessionId}`
+      setCopyLink(newCopyLink)
+      setSessionId(ActiveSessionId)
+      setShowModal(true)
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
   return (
     <div>
       <h1>Dashboard</h1>
@@ -165,11 +207,51 @@ const Dashboard = () => {
             <div key={game.id}>
               <h2>Name: {game.name}</h2>
               <p>Number of questions: {game.questions?.length || 0}</p>
-              {/* 根据需要显示缩略图 */}
+              {/* thumbnail */}
               <p>Total time to complete: {totalTime} seconds</p>
               <button onClick={() => deleteGame(game.id)}>Delete</button>
-              &nbsp;
+              &nbsp;&nbsp;
               <Link to={`/edit/game/${game.id}`}>Edit</Link>
+              &nbsp;&nbsp;
+              <button onClick={() => startGame(game.id)}>Start</button>
+              {/* modal */}
+              <div
+                id="modal"
+                style={{
+                  display: showModal ? 'block' : 'none',
+                  position: 'fixed',
+                  zIndex: 1,
+                  left: 0,
+                  top: 0,
+                  width: '100%',
+                  height: '100%',
+                  overflow: 'auto',
+                  backgroundColor: 'rgba(0,0,0,0.4)',
+                }}
+              >
+                <div
+                  style={{
+                    backgroundColor: '#fefefe',
+                    margin: '15% auto',
+                    padding: '20px',
+                    border: '1px solid #888',
+                    width: '80%',
+                  }}
+                >
+                  <p id="modal-text">Session ID: {sessionId}</p>
+                  <button
+                    data-clipboard-text={copyLink}
+                    onClick={(e) =>
+                      copyToClipboard(
+                        e.target.getAttribute('data-clipboard-text')
+                      )
+                    }
+                  >
+                    Copy Link
+                  </button>
+                  <button onClick={() => setShowModal(false)}>Close</button>
+                </div>
+              </div>
             </div>
           )
         })}

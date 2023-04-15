@@ -16,9 +16,12 @@ import {
 import SignIn from './components/SignIn'
 import SignUp from './components/SignUp'
 import Logout from './components/Logout'
+//
 import Dashboard from './components/Dashboard'
 import EditBigBrainGame from './components/EditBigBrainGame'
 import EditQuestion from './components/EditQuestion'
+//
+import GamePlay from './components/GamePlay'
 
 export const AppContext = createContext()
 
@@ -53,6 +56,9 @@ function App () {
           path: '/edit/game/:gameId/question/:questionId',
           element: <EditQuestion />,
         },
+        {
+          path: '/play/:sessionId', element: <GamePlay />
+        }
       ],
     },
   ])

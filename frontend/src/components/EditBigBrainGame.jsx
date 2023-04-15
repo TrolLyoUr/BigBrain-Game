@@ -103,7 +103,7 @@ const EditBigBrainGame = () => {
       (q) => q.id !== questionId
     );
     updateGame({ ...game, questions: updatedQuestions });
-  };
+  }
 
   const addQuestion = async () => {
     const newQuestion = {
@@ -122,10 +122,12 @@ const EditBigBrainGame = () => {
       ], // Default 2 answers with empty text and not marked as correct
     }
     updateGame({ ...game, questions: [...game.questions, newQuestion] });
-  };
+  }
+
   if (!game) {
     return <div>Loading...</div>;
   }
+
   return (
     <div>
       <h1>Edit BigBrain Game: {game.name}</h1>
