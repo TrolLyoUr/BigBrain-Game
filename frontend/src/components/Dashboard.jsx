@@ -11,6 +11,8 @@ const Dashboard = () => {
   const [showModal, setShowModal] = useState(false)
   const [sessionId, setSessionId] = useState(null)
   const [copyLink, setCopyLink] = useState('')
+  const [gameStatus, setGameStatus] = useState({})
+  const defaultThumbnailUrl = `${process.env.PUBLIC_URL}/assets/kahoot.png`
 
   useEffect(() => {
     fetchGamesList()
@@ -190,6 +192,37 @@ const Dashboard = () => {
     } catch (error) {
       console.log(error)
     }
+    setGameStatus((prevGameStatus) => ({
+      ...prevGameStatus,
+      [gameId]: true,
+    }))
+  }
+
+  const stopGame = async (gameId) => {
+    try {
+      await api.post(
+        `/admin/quiz/${gameId}/end`,
+        {},
+        {
+          headers: {
+            'Content-type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      )
+
+      // 弹窗提示用户查看结果
+      if (window.confirm('Would you like to view the results?')) {
+        // 根据实际情况重定向到结果页面
+      }
+    } catch (error) {
+      // Handle errors as needed
+      console.log(error)
+    }
+    setGameStatus((prevGameStatus) => ({
+      ...prevGameStatus,
+      [gameId]: false,
+    }))
   }
 
   return (
@@ -206,14 +239,32 @@ const Dashboard = () => {
           return (
             <div key={game.id}>
               <h2>Name: {game.name}</h2>
+              <p>
+                {/* Thumbnail: */}
+                {game.thumbnail
+                  ? (
+                  <img src={game.thumbnail} alt={`${game.name} thumbnail`} />
+                    )
+                  : (
+                  <img
+                    src={defaultThumbnailUrl}
+                    style={{ width: '30vw', height: 'auto', marginLeft: '10vw' }}
+                  />
+                    )}
+              </p>
               <p>Number of questions: {game.questions?.length || 0}</p>
-              {/* thumbnail */}
               <p>Total time to complete: {totalTime} seconds</p>
               <button onClick={() => deleteGame(game.id)}>Delete</button>
               &nbsp;&nbsp;
               <Link to={`/edit/game/${game.id}`}>Edit</Link>
+              {/* start or stop game. */}
               &nbsp;&nbsp;
-              <button onClick={() => startGame(game.id)}>Start</button>
+              {!gameStatus[game.id] && (
+                <button onClick={() => startGame(game.id)}>Start</button>
+              )}
+              {gameStatus[game.id] && (
+                <button onClick={() => stopGame(game.id)}>Stop</button>
+              )}
               {/* modal */}
               <div
                 id="modal"
@@ -249,6 +300,7 @@ const Dashboard = () => {
                   >
                     Copy Link
                   </button>
+                  &nbsp;&nbsp;
                   <button onClick={() => setShowModal(false)}>Close</button>
                 </div>
               </div>

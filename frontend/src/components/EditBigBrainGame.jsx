@@ -1,9 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
 import api from '../api'
 import { AppContext } from '../App'
-
 import { useParams, Link } from 'react-router-dom';
-
 const EditBigBrainGame = () => {
   const { token } = useContext(AppContext)
   const { gameId } = useParams();
@@ -29,7 +27,7 @@ const EditBigBrainGame = () => {
       if (fetchedGame.name === null) {
         fetchedGame.name = ''
       }
-      if (fetchedGame.thumbnail === null) {
+      if (fetchedGame.thumbnail == null) {
         fetchedGame.thumbnail = ''
       }
       if (fetchedGame.questions === null) {
@@ -64,6 +62,7 @@ const EditBigBrainGame = () => {
   }
 
   const updateGame = async (updatedGame) => {
+    console.log('Updated game:', updatedGame)
     try {
       await api.put(`/admin/quiz/${gameId}`, updatedGame, {
         headers: {
@@ -144,7 +143,7 @@ const EditBigBrainGame = () => {
         Thumbnail URL:
         <input
           type="text"
-          value={game.thumbnail}
+          value={game.thumbnail }
           onChange={(e) => updateGame({ ...game, thumbnail: e.target.value })}
         />
       </label>
