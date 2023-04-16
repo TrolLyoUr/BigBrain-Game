@@ -24,8 +24,9 @@ const EditQuestion = () => {
   const [answerCount, setAnswerCount] = useState(questionData.answers.length)
 
   useEffect(() => {
-    fetchQuestion()
-  }, [gameId, questionId])
+    if (token)
+      fetchQuestion()
+  }, [token, gameId, questionId])
 
   useEffect(() => {
     setAnswerCount(questionData.answers.length)
@@ -155,6 +156,25 @@ const EditQuestion = () => {
     return <div>Loading...</div>
   }
 
+  // Make sure only one answer is correct for single choice questions and the answer text is not empty
+  const handleCheckboxChange = (e, index) => {
+    if (!questionData.answers[index].text.trim()) {
+      e.preventDefault();
+      window.alert("Answer text cannot be empty.");
+      return;
+    }
+
+    const newAnswers = [...questionData.answers];
+
+    if (questionData.type === "single" && e.target.checked) {
+      newAnswers.forEach((answer) => (answer.correct = false));
+    }
+
+    newAnswers[index].correct = e.target.checked;
+    setQuestionData({ ...questionData, answers: newAnswers });
+  };
+
+
   return (
     <div>
       <h1>Edit Question</h1>
@@ -234,54 +254,49 @@ const EditQuestion = () => {
         {/* Answer count */}
         <div>
           <label htmlFor="answerCount">Answer Count:</label>
-          <input
-            type="number"
+          <select
             id="answerCount"
-            min="2"
-            max="6"
             value={answerCount}
             onChange={(e) => {
-              const newAnswerCount = parseInt(e.target.value, 10)
-              setAnswerCount(newAnswerCount)
-              updateAnswerList(newAnswerCount)
+              const newAnswerCount = parseInt(e.target.value, 10);
+              setAnswerCount(newAnswerCount);
+              updateAnswerList(newAnswerCount);
             }}
-          />
+          >
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5">5</option>
+            <option value="6">6</option>
+          </select>
         </div>
 
         {/* Answers */}
         <div>
           <label>Answers:</label>
           {questionData.answers
-            ? (
-                questionData.answers.map((answer, index) => (
+            ? questionData.answers.map((answer, index) => (
               <div key={index}>
                 <input
                   type="text"
-                  value={answer.text || ''}
+                  value={answer.text || ""}
                   onChange={(e) => {
-                    const newAnswers = [...questionData.answers]
-                    newAnswers[index].text = e.target.value
-                    setQuestionData({ ...questionData, answers: newAnswers })
+                    const newAnswers = [...questionData.answers];
+                    newAnswers[index].text = e.target.value;
+                    setQuestionData({ ...questionData, answers: newAnswers });
                   }}
                 />
                 <label>
                   <input
                     type="checkbox"
                     checked={answer.correct || false}
-                    onChange={(e) => {
-                      const newAnswers = [...questionData.answers]
-                      newAnswers[index].correct = e.target.checked
-                      setQuestionData({ ...questionData, answers: newAnswers })
-                    }}
+                    onChange={(e) => handleCheckboxChange(e, index)}
                   />
                   Correct
                 </label>
               </div>
-                ))
-              )
-            : (
-            <p>Loading answers...</p>
-              )}
+            ))
+            : <p>Loading answers...</p>}
         </div>
         <button type="submit">Save Changes</button>
         &nbsp;&nbsp;

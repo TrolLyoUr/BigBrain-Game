@@ -8,8 +8,9 @@ const EditBigBrainGame = () => {
   const [game, setGame] = useState(null);
 
   useEffect(() => {
-    fetchGame();
-  }, [gameId]);
+    if (token)
+      fetchGame();
+  }, [token, gameId]);
 
   const fetchGame = async () => {
     try {
@@ -40,22 +41,22 @@ const EditBigBrainGame = () => {
         switch (error.response.status) {
           case 400:
             window.alert(
-            `Error: Bad Input (400) ${JSON.stringify(error.response.data)}`
+              `Error: Bad Input (400) ${JSON.stringify(error.response.data)}`
             )
             break
           case 403:
             window.alert(
-            `Error: Forbidden (403) ${JSON.stringify(error.response.data)}`
+              `Error: Forbidden (403) ${JSON.stringify(error.response.data)}`
             )
             break
           default:
             window.alert(`Error: ${error.response.status}`)
         }
       } else if (error.request) {
-      // The request was made, but no response was received
+        // The request was made, but no response was received
         window.alert('Error: No response received')
       } else {
-      // Something happened in setting up the request that triggered an error
+        // Something happened in setting up the request that triggered an error
         window.alert(`Error: ${error.message}`)
       }
     }
@@ -143,7 +144,7 @@ const EditBigBrainGame = () => {
         Thumbnail URL:
         <input
           type="text"
-          value={game.thumbnail }
+          value={game.thumbnail}
           onChange={(e) => updateGame({ ...game, thumbnail: e.target.value })}
         />
       </label>
