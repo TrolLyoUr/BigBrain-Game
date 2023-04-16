@@ -8,7 +8,7 @@ const EditQuestion = () => {
   const { token } = useContext(AppContext)
   const [questionData, setQuestionData] = useState({
     id: '',
-    type: 'single_choice',
+    type: 'single',
     text: '',
     time: 0,
     points: 0,

@@ -108,7 +108,7 @@ const EditBigBrainGame = () => {
   const addQuestion = async () => {
     const newQuestion = {
       id: Date.now(), // Generate a unique ID for simplicity
-      type: 'single_choice', // Default question type
+      type: 'single', // Default question type
       text: '',
       time: 0,
       points: 0,
