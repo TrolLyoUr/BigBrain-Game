@@ -74,8 +74,39 @@ const EditQuestion = () => {
     }
   }
 
+  // Make sure all fields are filled out
+  const validateForm = () => {
+    if (!questionData.text.trim()) {
+      window.alert('Question text cannot be empty.');
+      return false;
+    }
+
+    if (!questionData.time) {
+      window.alert('Time limit cannot be empty or zero.');
+      return false;
+    }
+
+    if (!questionData.points) {
+      window.alert('Points cannot be empty or zero.');
+      return false;
+    }
+
+    for (let i = 0; i < questionData.answers.length; i++) {
+      if (!questionData.answers[i].text.trim()) {
+        window.alert('All answers must have text.');
+        return false;
+      }
+    }
+
+    return true;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault()
+
+    if (!validateForm()) {
+      return;
+    }
     const updatedQuestion = {
       id: questionData.id,
       type: questionData.type,
