@@ -19,6 +19,8 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import StopIcon from '@mui/icons-material/Stop';
 import FileCopyIcon from '@mui/icons-material/FileCopy';
+import { startGame, stopGame } from './GameActions';
+
 
 const Dashboard = () => {
   const { token } = useContext(AppContext)
@@ -183,67 +185,6 @@ const Dashboard = () => {
     }
   }
 
-  const startGame = async (gameId) => {
-    try {
-      await api.post(
-        `/admin/quiz/${gameId}/start`,
-        {},
-        {
-          headers: {
-            'Content-type': 'application/json',
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      )
-
-      const gameResponse = await api.get(`/admin/quiz/${gameId}`, {
-        headers: {
-          'Content-type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-      })
-
-      const ActiveSessionId = gameResponse.data.active
-      const newCopyLink = `${window.location.origin}/game/${gameId}/session/${ActiveSessionId}`
-      setCopyLink(newCopyLink)
-      setSessionId(ActiveSessionId)
-      setShowModal(true)
-    } catch (error) {
-      console.log(error)
-    }
-    setGameStatus((prevGameStatus) => ({
-      ...prevGameStatus,
-      [gameId]: true,
-    }))
-  }
-
-  const stopGame = async (gameId) => {
-    try {
-      await api.post(
-        `/admin/quiz/${gameId}/end`,
-        {},
-        {
-          headers: {
-            'Content-type': 'application/json',
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      )
-
-      // 弹窗提示用户查看结果
-      if (window.confirm('Would you like to view the results?')) {
-        // 根据实际情况重定向到结果页面
-      }
-    } catch (error) {
-      // Handle errors as needed
-      console.log(error)
-    }
-    setGameStatus((prevGameStatus) => ({
-      ...prevGameStatus,
-      [gameId]: false,
-    }))
-  }
-
   return (
     <Container>
       <Box sx={{ my: 4 }}>
@@ -299,7 +240,7 @@ const Dashboard = () => {
                     {!gameStatus[game.id] && (
                       <IconButton
                         aria-label="start"
-                        onClick={() => startGame(game.id)}
+                        onClick={() => startGame(game.id, token, setCopyLink, setSessionId, setShowModal, setGameStatus)}
                       >
                         <PlayArrowIcon />
                       </IconButton>
@@ -307,7 +248,7 @@ const Dashboard = () => {
                     {gameStatus[game.id] && (
                       <IconButton
                         aria-label="stop"
-                        onClick={() => stopGame(game.id)}
+                        onClick={() => stopGame(game.id, token, setGameStatus)}
                       >
                         <StopIcon />
                       </IconButton>
