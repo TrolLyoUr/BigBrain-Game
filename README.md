@@ -15,8 +15,12 @@
 * 02/04/2023: General edit clause added to 2.2.2
 * 02/04/2023: Comments about advancing added to 2.3.1
 * 04/04/2023: Few helpful tips and elaborations based on questions students ask - see commit for more details.
+* 11/04/2023: Clarified a lot of "game" "session" language that some students found confusing. Updated Typescript link.
+* 15/04/2023: Fixed /admin/quiz/new example response in Swagger.
 
-## 1. Background & Motivation
+## 1. Before you start
+
+### 1.1. Background & Motivation
 
 In March 2022 you and your friends pitched a startup idea to produce *An innovative lightweight quiz platform for millenials* that will *revolutionise the secondary and tertiary education market for years*. You pitched this solution in the form of a web-based application, and called this quiz application **BigBrain**.
 
@@ -31,6 +35,28 @@ Because your MVP is only going to be demonstrated once, your team considers it i
 To satisfy modern tastes and expectations you have also decided to ensure that the UI/UX and Accessibility standards are very high.
 
 **This assignment is the process you building the front-end for that MVP to the standards described.** This assignment is closely modelled off the popular game [kahoot](https://kahoot.com/). If you're not familiar with the game, we would recommend spending the time to try it out so that you can get a feel for how this application may function.
+
+### 1.2. Lectures to watch
+
+You will _need_ to watch at least the following lectures before starting (it will help you get started):
+ * [Javascript Ecosystem](https://cgi.cse.unsw.edu.au/~cs6080/23T1/content/lectures/javascript-ecosystem)
+ * [Node Package Manager](https://cgi.cse.unsw.edu.au/~cs6080/23T1/content/lectures/javascript-npm)
+ * [ReactJS Introduction](https://cgi.cse.unsw.edu.au/~cs6080/23T1/content/lectures/react-intro)
+ * [ReactJS Global CSS Usage](https://cgi.cse.unsw.edu.au/~cs6080/23T1/content/lectures/react-css-basic)
+ * [ReactJS Lifecycle](https://cgi.cse.unsw.edu.au/~cs6080/23T1/content/lectures/react-lifecycle)
+ * [ReactJS useState hook](https://cgi.cse.unsw.edu.au/~cs6080/23T1/content/lectures/react-hooks-state)
+ * [ReactJS useEffect hook](https://cgi.cse.unsw.edu.au/~cs6080/23T1/content/lectures/react-hooks-effect)
+ * [Working with multiple files](https://cgi.cse.unsw.edu.au/~cs6080/23T1/content/lectures/multi-file-import)
+ * [Components & Props](https://cgi.cse.unsw.edu.au/~cs6080/23T1/content/lectures/react-components-props)
+ * [Linting](https://cgi.cse.unsw.edu.au/~cs6080/23T1/content/lectures/javascript-linting)
+
+You will _need_ to watch at least the following lectures to finish the assessment completely:
+ * [Routing & SPAs](https://cgi.cse.unsw.edu.au/~cs6080/23T1/content/lectures/react-routing-spas)
+ * [CSS Frameworks](https://cgi.cse.unsw.edu.au/~cs6080/23T1/content/lectures/react-css-frameworks)
+ * [useContext hook](https://cgi.cse.unsw.edu.au/~cs6080/23T1/content/lectures/react-hooks-context)
+ * [Testing introduction](https://cgi.cse.unsw.edu.au/~cs6080/23T1/content/lectures/testing-intro)
+ * [Component testing](https://cgi.cse.unsw.edu.au/~cs6080/23T1/content/lectures/testing-components)
+ * [UI Testing](https://cgi.cse.unsw.edu.au/~cs6080/23T1/content/lectures/testing-ui)
 
 ## 2. The Front-end (Work to do)
 
@@ -85,17 +111,17 @@ A series of features below need to be implemented in your ReactJS app to operate
 ### 2.3. Feature 3. Admin Start, Stop, Results of game (12% for solo, 10% for pairs)
 
 #### 2.3.1. Starting a game
- * On the dashboard page, add the ability to start a stopped game
+ * On the dashboard page, add the ability to start a new session.
  * When the game is started, a popup is displayed that shows the session ID of the game as a string
  * This session ID should be able to be copied by some kind of "Copy Link" button/element. When this item is clicked, a direct URL is copied to the clipboard. When going to this URL, the users should be given play screen (described in `2.4`) with the session code already pre-populated.
 
 #### 2.3.2. Stopping a game
- * On the dashboard page, the ability to stop a started game.
+ * On the dashboard page, the ability to stop a started game. Stopping a game sends all active players to the results screen. A stopped session cannot be restarted.
  * When the game is stopped, a popup appears that prompts the admin "Would you like to view the results?" If they click yes, they are taken to the screen described in `2.3.3`
 
 #### 2.3.3. Advancing & getting the results of a game
  * A unique route must exist for this screen that is parameterised on the session ID
- * Once the screen loads, and the game hasn't finished, it should allow the admin to advance to the next question or stop the game.
+ * Once the screen loads, and the game hasn't finished, it should allow the admin to advance to the next question or stop the session. You can advance either in the middle of a question or once the question has finished.
  * Once the screen loads, and the game has finished, it should display the following:
    * Table of up to top 5 users and their score
    * Bar/Line chart showing a breakdown of what percentage of people (Y axis) got certain questions (X axis) correct
@@ -106,7 +132,10 @@ A series of features below need to be implemented in your ReactJS app to operate
 
 #### 2.4.1. Play Join
  * A unique route must exist for this screen
- * A user is able to enter a session ID and their own name to attempt to join the session. If succesful, they're taken to `2.4.2`.
+ * A user is able to enter a session by either:
+   * Navigating to a pre-determined URL they know about, then entering a session ID that an admin provides; or
+   * Just following a URL that the admin provides that includes the session ID in it
+ * After they're there, they enter their own name to attempt to join the session. If succesful, they're taken to `2.4.2`.
 
 #### 2.4.2. Play Game
  * If the game has not yet started (i.e. have not advanced to the first question) a screen can exist that just says "Please wait".
@@ -118,7 +147,8 @@ A series of features below need to be implemented in your ReactJS app to operate
  * The answer shall be sent to the server the moment the user starts making selections. If further selections are modified, more requests are sent
  * When the timer hits 0, the answer/results of that particular question are displayed
  * The answer screen remains visible until the admin advances the quiz question onto the next question.
-
+ * Note: Once the game begins (onto the first question or more) no other players can join.
+ 
 #### 2.4.3. Game Results
  * After the final question is answered, a page is displayed showing the key results:
    * The player's performance in each question
@@ -142,6 +172,8 @@ A series of features below need to be implemented in your ReactJS app to operate
 ### 2.6. Linting
 
 * Linting must be run from inside the `frontend` folder by running `npm run lint`.
+
+If you would like to disable linting checks during hot reload (and just use the check on command line), then in `frontend/package.json` replace `react-scripts start` with `ESLINT_NO_DEV_ERRORS='true'; react-scripts start`. Note: This does not work on windows machines.
 
 ### 2.7. Testing
 
@@ -177,8 +209,8 @@ A common question we get about component testing is 'what components do I test? 
 
 ### 2.8. Other notes
  * The port you can use to `fetch` data from the backend is defined in `frontend/src/config.json`
- * The data structure of a "question" is open ended - it's not defined explicitly in the backend. Because of this, the backend has 3 wrapper functions defined in `backend/src/custom.js` that it uses to extract meaning from your custom data structure. <b>You will have to implement these as you build out your frontend</b>b>.
-* For users of typescript, there is an alternatively `.eslintrc` file [being collaborated here](https://hackmd.io/sy1urGgxRpGwOJ0nOkNlUw?both). Do not change it unless given approval on forum.
+ * The data structure of a "question" is open ended for YOU to define how it's structured - it's not defined explicitly in the backend. Because of this, the backend has 3 wrapper functions defined in `backend/src/custom.js` that it uses to extract meaning from your custom data structure. <b>You will have to implement these as you build out your frontend</b>b>.
+* For users of typescript, [follow this guide](https://gitlab.cse.unsw.edu.au/COMP6080/23T1/react-typescript)
 
 ### 3.1. The Frontend
 
@@ -187,6 +219,8 @@ Navigate to the `frontend` folder and run `npm install` to install all of the de
 Please note that some properties that the backend takes in are defined as blank objects. These are objects that can be defined by you, as the backend will simply store your object on some routes and then return it to you on other routes (i.e. the backend doesn't need to understand the schema of some objects you pass it). An example of this object is all of the data associated with a quiz.
 
 This approach we've taken is actually designed to make the assignment _easier_, as it gives you control without having to worry about backend architecture.
+
+Don't forget to check out our helpful resources about [ReactJS](https://cgi.cse.unsw.edu.au/~cs6080/23T1/help/resources/reactjs).
 
 ### 3.2. The Backend (provided)
 
@@ -324,6 +358,7 @@ Your assignment will be hand-marked by tutor(s) in the course according to the c
         <li>Any bonus marks that extend your ass3 mark above 100% will bleed into other assignment marks, but cannot contribute outside of the 80% of the course that is allocated for assignment marks</li>
         <li><b>Expectations placed on solo groups will be half of that of pairs to achieve the same mark.</b></li>
         <li>If you are working individually and complete Advanced Features (section 2.5) in it's entirety (and high quality) you can receive full marks for bonus marks.</li>
+        <li>Note: If you choose to complete your assignment (Frontend) fully in typescript, such that everything is type compliant to the provided tsconfig definition, then this will count as full marks for bonus marks.</li>
       </ul>
     </td>
   </tr>
@@ -355,7 +390,7 @@ submit is your own work (as described above).
 Note you will not be penalized if your work has the potential to be taken without your consent or
 knowledge.
 
-**PLEASE NOTE: To ensure the originality of your work, we are requiring that you regularly commit your work to git throughout the weeks this assignment has been released. Regular and small commits and critical. Failures to commit regularly (or at minimum, failures to commit in small chunks) may result in allegations of plagiarism**
+**PLEASE NOTE: To ensure the originality of your work, we are requiring that you regularly commit your work to git throughout the weeks this assignment has been released. Regular and small commits (essentially at least once a day that you work on the assignment) are critical. Failures to commit regularly (or at minimum, failures to commit in small chunks) may result in allegations of plagiarism.**
 
 ## 8. Submission
 
