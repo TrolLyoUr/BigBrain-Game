@@ -6,6 +6,7 @@ import { Link } from 'react-router-dom'
 
 const Dashboard = () => {
   const { token } = useContext(AppContext)
+  console.log(token)
   const [gamesList, setGamesList] = useState([])
   //
   const [showModal, setShowModal] = useState(false)
@@ -15,8 +16,10 @@ const Dashboard = () => {
   const defaultThumbnailUrl = `${process.env.PUBLIC_URL}/assets/kahoot.png`
 
   useEffect(() => {
-    fetchGamesList()
-  }, [])
+    if (token) {
+      fetchGamesList()
+    }
+  }, [token])
 
   const fetchGamesList = async () => {
     try {
@@ -185,7 +188,7 @@ const Dashboard = () => {
       })
 
       const ActiveSessionId = gameResponse.data.active
-      const newCopyLink = `${window.location.origin}/play/${ActiveSessionId}`
+      const newCopyLink = `${window.location.origin}/game/${gameId}/session/${ActiveSessionId}`
       setCopyLink(newCopyLink)
       setSessionId(ActiveSessionId)
       setShowModal(true)
