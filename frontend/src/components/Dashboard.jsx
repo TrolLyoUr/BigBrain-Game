@@ -1,8 +1,24 @@
-import React, { useState, useEffect, useContext } from 'react'
-import api from '../api'
-import { AppContext } from '../App'
-
-import { Link } from 'react-router-dom'
+import React, { useState, useEffect, useContext } from 'react';
+import { Link as RouterLink } from 'react-router-dom';
+import api from '../api';
+import { AppContext } from '../App';
+import {
+  Box,
+  Button,
+  Card,
+  CardActions,
+  CardContent,
+  Container,
+  Grid,
+  IconButton,
+  Typography,
+} from '@mui/material';
+import AddIcon from '@mui/icons-material/Add';
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
+import PlayArrowIcon from '@mui/icons-material/PlayArrow';
+import StopIcon from '@mui/icons-material/Stop';
+import FileCopyIcon from '@mui/icons-material/FileCopy';
 
 const Dashboard = () => {
   const { token } = useContext(AppContext)
@@ -32,7 +48,7 @@ const Dashboard = () => {
       // console.log('res: ', response.data)
       // Check if the response data contains an array of quizzes
       if (Array.isArray(response.data.quizzes)) {
-      // Create an array of promises to fetch the full data for each game
+        // Create an array of promises to fetch the full data for each game
         const gamePromises = response.data.quizzes.map(async (game) => {
           const gameResponse = await api.get(`/admin/quiz/${game.id}`, {
             headers: {
@@ -60,17 +76,17 @@ const Dashboard = () => {
         switch (error.response.status) {
           case 403:
             window.alert(
-            `Error: Forbidden (403) ${JSON.stringify(error.response.data)}`
+              `Error: Forbidden (403) ${JSON.stringify(error.response.data)}`
             )
             break
           default:
             window.alert(`Error: ${error.response.status}`)
         }
       } else if (error.request) {
-      // The request was made, but no response was received
+        // The request was made, but no response was received
         window.alert('Error: No response received')
       } else {
-      // Something happened in setting up the request that triggered an error
+        // Something happened in setting up the request that triggered an error
         window.alert(`Error: ${error.message}`)
       }
     }
@@ -229,90 +245,82 @@ const Dashboard = () => {
   }
 
   return (
-    <div>
-      <h1>Dashboard</h1>
-      <button onClick={createGame}>Create New Game</button>
-      <div>
-        {/* <>{console.log(gamesList)}</> */}
-        {gamesList.map((game) => {
-          // console.log(game.questions)
-          const totalTime =
-            game.questions?.reduce((sum, question) => sum + question.time, 0) ||
-            0
-          return (
-            <div key={game.id}>
-              <h2>Name: {game.name}</h2>
-              <p>
-                {/* Thumbnail: */}
-                {game.thumbnail
-                  ? (
-                  <img src={game.thumbnail} alt={`${game.name} thumbnail`} />
-                    )
-                  : (
-                  <img
-                    src={defaultThumbnailUrl}
-                    style={{ width: '30vw', height: 'auto', marginLeft: '10vw' }}
-                  />
-                    )}
-              </p>
-              <p>Number of questions: {game.questions?.length || 0}</p>
-              <p>Total time to complete: {totalTime} seconds</p>
-              <button onClick={() => deleteGame(game.id)}>Delete</button>
-              &nbsp;&nbsp;
-              <Link to={`/edit/game/${game.id}`}>Edit</Link>
-              {/* start or stop game. */}
-              &nbsp;&nbsp;
-              {!gameStatus[game.id] && (
-                <button onClick={() => startGame(game.id)}>Start</button>
-              )}
-              {gameStatus[game.id] && (
-                <button onClick={() => stopGame(game.id)}>Stop</button>
-              )}
-              {/* modal */}
-              <div
-                id="modal"
-                style={{
-                  display: showModal ? 'block' : 'none',
-                  position: 'fixed',
-                  zIndex: 1,
-                  left: 0,
-                  top: 0,
-                  width: '100%',
-                  height: '100%',
-                  overflow: 'auto',
-                  backgroundColor: 'rgba(0,0,0,0.4)',
-                }}
-              >
-                <div
-                  style={{
-                    backgroundColor: '#fefefe',
-                    margin: '15% auto',
-                    padding: '20px',
-                    border: '1px solid #888',
-                    width: '80%',
-                  }}
-                >
-                  <p id="modal-text">Session ID: {sessionId}</p>
-                  <button
-                    data-clipboard-text={copyLink}
-                    onClick={(e) =>
-                      copyToClipboard(
-                        e.target.getAttribute('data-clipboard-text')
-                      )
-                    }
-                  >
-                    Copy Link
-                  </button>
-                  &nbsp;&nbsp;
-                  <button onClick={() => setShowModal(false)}>Close</button>
-                </div>
-              </div>
-            </div>
-          )
-        })}
-      </div>
-    </div>
-  )
-}
+    <Container>
+      <Box sx={{ my: 4 }}>
+        <Typography variant="h4" component="h1">
+          Dashboard
+        </Typography>
+        <Box sx={{ mt: 2 }}>
+          <Button
+            variant="contained"
+            color="primary"
+            startIcon={<AddIcon />}
+            onClick={createGame}
+          >
+            Create New Game
+          </Button>
+        </Box>
+        <Grid container spacing={3} sx={{ mt: 3 }}>
+          {gamesList.map((game) => {
+            const totalTime =
+              game.questions?.reduce(
+                (sum, question) => sum + question.time,
+                0
+              ) || 0;
 
-export default Dashboard
+            return (
+              <Grid key={game.id} item xs={12} sm={6} md={4}>
+                <Card>
+                  <CardContent>
+                    <Typography variant="h5" component="h2">
+                      {game.name}
+                    </Typography>
+                    <Typography sx={{ mb: 1.5 }} color="text.secondary">
+                      {game.questions?.length || 0} questions
+                    </Typography>
+                    <Typography variant="body2">
+                      Total time: {totalTime} seconds
+                    </Typography>
+                  </CardContent>
+                  <CardActions>
+                    <IconButton
+                      aria-label="edit"
+                      component={RouterLink}
+                      to={`/edit/game/${game.id}`}
+                    >
+                      <EditIcon />
+                    </IconButton>
+                    <IconButton
+                      aria-label="delete"
+                      onClick={() => deleteGame(game.id)}
+                    >
+                      <DeleteIcon />
+                    </IconButton>
+                    {!gameStatus[game.id] && (
+                      <IconButton
+                        aria-label="start"
+                        onClick={() => startGame(game.id)}
+                      >
+                        <PlayArrowIcon />
+                      </IconButton>
+                    )}
+                    {gameStatus[game.id] && (
+                      <IconButton
+                        aria-label="stop"
+                        onClick={() => stopGame(game.id)}
+                      >
+                        <StopIcon />
+                      </IconButton>
+                    )}
+                  </CardActions>
+                </Card>
+              </Grid>
+            );
+          })}
+        </Grid>
+      </Box>
+    </Container>
+  );
+};
+
+export default Dashboard;

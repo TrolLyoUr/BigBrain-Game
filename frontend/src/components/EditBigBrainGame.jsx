@@ -1,7 +1,15 @@
 import React, { useState, useEffect, useContext } from 'react';
 import api from '../api'
 import { AppContext } from '../App'
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link as RouterLink } from 'react-router-dom';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import Container from '@mui/material/Container';
+import Grid from '@mui/material/Grid';
+import Link from '@mui/material/Link';
+import TextField from '@mui/material/TextField';
+import Typography from '@mui/material/Typography';
+
 const EditBigBrainGame = () => {
   const { token } = useContext(AppContext)
   const { gameId } = useParams();
@@ -129,47 +137,69 @@ const EditBigBrainGame = () => {
   }
 
   return (
-    <div>
-      <h1>Edit BigBrain Game: {game.name}</h1>
-      <label>
-        Game Name:
-        <input
-          type="text"
+    <Container>
+      <Box mt={4}>
+        <Typography variant="h4">Edit BigBrain Game: {game.name}</Typography>
+      </Box>
+      <Box mt={2}>
+        <TextField
+          label="Game Name"
+          variant="outlined"
           value={game.name}
           onChange={(e) => updateGame({ ...game, name: e.target.value })}
         />
-      </label>
-      <br />
-      <label>
-        Thumbnail URL:
-        <input
-          type="text"
+      </Box>
+      <Box mt={2}>
+        <TextField
+          label="Thumbnail URL"
+          variant="outlined"
           value={game.thumbnail}
           onChange={(e) => updateGame({ ...game, thumbnail: e.target.value })}
         />
-      </label>
-      <br />
-      <br />
-      <hr />
-      <div>
-        <button onClick={addQuestion}>Add New Question</button>
-        &nbsp;&nbsp;
-        <Link to={'/Dashboard'}>Dashboard</Link>
-      </div>
-      <h2>Questions: </h2>
-      {game.questions.map((question, index) => (
-        <div key={question.id}>
-          <h3>Question {index + 1}</h3>
-          <button onClick={() => deleteQuestion(question.id)}>
-            Delete Question
-          </button>
-          &nbsp;&nbsp;
-          <Link to={`/edit/game/${gameId}/question/${question.id}`}>
-            Edit Question
-          </Link>
-        </div>
-      ))}
-    </div>
+      </Box>
+      <Box mt={4}>
+        <Grid container spacing={2}>
+          <Grid item>
+            <Button variant="contained" color="primary" onClick={addQuestion}>
+              Add New Question
+            </Button>
+          </Grid>
+          <Grid item>
+            <Link component={RouterLink} to="/Dashboard" variant="body1">
+              Dashboard
+            </Link>
+          </Grid>
+        </Grid>
+      </Box>
+      <Box mt={4}>
+        <Typography variant="h5">Questions:</Typography>
+        {game.questions.map((question, index) => (
+          <Box key={question.id} mt={2}>
+            <Typography variant="h6">Question {index + 1}</Typography>
+            <Grid container spacing={2}>
+              <Grid item>
+                <Button
+                  variant="contained"
+                  color="secondary"
+                  onClick={() => deleteQuestion(question.id)}
+                >
+                  Delete Question
+                </Button>
+              </Grid>
+              <Grid item>
+                <Link
+                  component={RouterLink}
+                  to={`/edit/game/${gameId}/question/${question.id}`}
+                  variant="body1"
+                >
+                  Edit Question
+                </Link>
+              </Grid>
+            </Grid>
+          </Box>
+        ))}
+      </Box>
+    </Container>
   )
 };
 

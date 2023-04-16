@@ -1,7 +1,19 @@
-import React, { useState, useEffect, useContext } from 'react'
-import { useParams, Link } from 'react-router-dom'
-import api from '../api'
-import { AppContext } from '../App'
+import React, { useState, useEffect, useContext } from 'react';
+import { useParams, Link as RouterLink } from 'react-router-dom';
+import api from '../api';
+import { AppContext } from '../App';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import Checkbox from '@mui/material/Checkbox';
+import Container from '@mui/material/Container';
+import FormControl from '@mui/material/FormControl';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Grid from '@mui/material/Grid';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import Select from '@mui/material/Select';
+import TextField from '@mui/material/TextField';
+import Typography from '@mui/material/Typography';
 
 const EditQuestion = () => {
   const { gameId, questionId } = useParams()
@@ -207,134 +219,163 @@ const EditQuestion = () => {
 
 
   return (
-    <div>
-      <h1>Edit Question</h1>
-      <form onSubmit={handleSubmit}>
-        {/* Question type */}
-        <div>
-          <label htmlFor="questionType">Question Type:</label>
-          <select
-            id="questionType"
-            value={questionData.type || ''}
-            onChange={(e) =>
-              setQuestionData({ ...questionData, type: e.target.value })
-            }
-          >
-            <option value="single">Single Choice</option>
-            <option value="multiple">Multiple Choice</option>
-          </select>
-        </div>
-        {/* Question text */}
-        <div>
-          <label htmlFor="questionText">Question Text:</label>
-          <input
-            type="text"
-            id="questionText"
-            value={questionData.text || ''}
-            onChange={(e) =>
-              setQuestionData({ ...questionData, text: e.target.value })
-            }
-          />
-        </div>
-        {/* Time limit */}
-        <div>
-          <label htmlFor="timeLimit">Time Limit:</label>
-          <input
-            type="number"
-            id="timeLimit"
-            value={questionData.time ? questionData.time.toString() : ''}
-            onChange={(e) =>
-              setQuestionData({
-                ...questionData,
-                time: parseInt(e.target.value, 10),
-              })
-            }
-          />
-        </div>
-        {/* Points */}
-        <div>
-          <label htmlFor="points">Points:</label>
-          <input
-            type="number"
-            id="points"
-            value={questionData.points ? questionData.points.toString() : ''}
-            onChange={(e) =>
-              setQuestionData({
-                ...questionData,
-                points: parseInt(e.target.value, 10),
-              })
-            }
-          />
-        </div>
-        {/* YouTube video URL or photo upload */}
-        <div>
-          <label htmlFor="media">Media (YouTube URL or Photo):</label>
-          <input
-            type="text"
-            id="media"
-            value={questionData.media ? questionData.media.url : ''}
-            onChange={(e) =>
-              setQuestionData({
-                ...questionData,
-                media: { ...questionData.media, url: e.target.value },
-              })
-            }
-          />
-        </div>
+    <Container>
+      <Box mt={4}>
+        <Typography variant="h4">Edit Question</Typography>
+      </Box>
+      <Box mt={2}>
+        <form onSubmit={handleSubmit}>
+          {/* Question type */}
+          <Box mt={2}>
+            <FormControl fullWidth variant="outlined">
+              <InputLabel id="questionType-label">Question Type</InputLabel>
+              <Select
+                labelId="questionType-label"
+                id="questionType"
+                value={questionData.type || ''}
+                onChange={(e) =>
+                  setQuestionData({ ...questionData, type: e.target.value })
+                }
+                label="Question Type"
+              >
+                <MenuItem value="single">Single Choice</MenuItem>
+                <MenuItem value="multiple">Multiple Choice</MenuItem>
+              </Select>
+            </FormControl>
+          </Box>
+          {/* Question text */}
+          <Box mt={2}>
+            <TextField
+              label="Question Text"
+              variant="outlined"
+              fullWidth
+              value={questionData.text || ''}
+              onChange={(e) =>
+                setQuestionData({ ...questionData, text: e.target.value })
+              }
+            />
+          </Box>
+          {/* Time limit */}
+          <Box mt={2}>
+            <TextField
+              label="Time Limit"
+              variant="outlined"
+              type="number"
+              fullWidth
+              value={questionData.time ? questionData.time.toString() : ''}
+              onChange={(e) =>
+                setQuestionData({
+                  ...questionData,
+                  time: parseInt(e.target.value, 10),
+                })
+              }
+            />
+          </Box>
+          {/* Points */}
+          <Box mt={2}>
+            <TextField
+              label="Points"
+              variant="outlined"
+              type="number"
+              fullWidth
+              value={questionData.points ? questionData.points.toString() : ''}
+              onChange={(e) =>
+                setQuestionData({
+                  ...questionData,
+                  points: parseInt(e.target.value, 10),
+                })
+              }
+            />
+          </Box>
+          {/* Media */}
+          <Box mt={2}>
+            <TextField
+              label="Media (YouTube URL or Photo)"
+              variant="outlined"
+              fullWidth
+              value={questionData.media ? questionData.media.url : ''}
+              onChange={(e) =>
+                setQuestionData({
+                  ...questionData,
+                  media: { ...questionData.media, url: e.target.value },
+                })
+              }
+            />
+          </Box>
+          {/* Answer count */}
+          <Box mt={2}>
+            <FormControl fullWidth variant="outlined">
+              <InputLabel id="answerCount-label">Answer Count</InputLabel>
+              <Select
+                labelId="answerCount-label"
+                id="answerCount"
+                value={answerCount}
+                onChange={(e) => {
+                  const newAnswerCount = parseInt(e.target.value, 10);
+                  setAnswerCount(newAnswerCount);
+                  updateAnswerList(newAnswerCount);
+                }}
+                label="Answer Count"
+              >
+                <MenuItem value="2">2</MenuItem>
+                <MenuItem value="3">3</MenuItem>
+                <MenuItem value="4">4</MenuItem>
+                <MenuItem value="5">5</MenuItem>
+                <MenuItem value="6">6</MenuItem>
+              </Select>
+            </FormControl>
+          </Box>
+          {/* Answers */}
+          <Box mt={2}>
+            <Typography variant="h6">Answers:</Typography>
+            {questionData.answers
+              ? questionData.answers.map((answer, index) => (
+                <Grid container spacing={2} key={index}>
+                  <Grid item xs={10}>
+                    <TextField
+                      label={`Answer ${index + 1}`}
+                      variant="outlined"
+                      fullWidth
+                      value={answer.text || ''}
+                      onChange={(e) => {
+                        const newAnswers = [...questionData.answers];
+                        newAnswers[index].text = e.target.value;
+                        setQuestionData({ ...questionData, answers: newAnswers });
+                      }}
+                    />
+                  </Grid>
+                  <Grid item xs={2}>
+                    <FormControlLabel
+                      control={
+                        <Checkbox
+                          checked={answer.correct || false}
+                          onChange={(e) => handleCheckboxChange(e, index)}
+                        />
+                      }
+                      label="Correct"
+                    />
+                  </Grid>
+                </Grid>
+              ))
+              : <p>Loading answers...</p>}
+          </Box>
+          <Box mt={4}>
+            <Button type="submit" variant="contained" color="primary">
+              Save Changes
+            </Button>
+            &nbsp;&nbsp;
+            <Button
+              component={RouterLink}
+              to={`/edit/game/${gameId}`}
+              variant="contained"
+            >
+              Back to game page
+            </Button>
+          </Box>
+        </form>
+      </Box>
+    </Container>
+  );
+};
 
-        {/* Answer count */}
-        <div>
-          <label htmlFor="answerCount">Answer Count:</label>
-          <select
-            id="answerCount"
-            value={answerCount}
-            onChange={(e) => {
-              const newAnswerCount = parseInt(e.target.value, 10);
-              setAnswerCount(newAnswerCount);
-              updateAnswerList(newAnswerCount);
-            }}
-          >
-            <option value="2">2</option>
-            <option value="3">3</option>
-            <option value="4">4</option>
-            <option value="5">5</option>
-            <option value="6">6</option>
-          </select>
-        </div>
-
-        {/* Answers */}
-        <div>
-          <label>Answers:</label>
-          {questionData.answers
-            ? questionData.answers.map((answer, index) => (
-              <div key={index}>
-                <input
-                  type="text"
-                  value={answer.text || ""}
-                  onChange={(e) => {
-                    const newAnswers = [...questionData.answers];
-                    newAnswers[index].text = e.target.value;
-                    setQuestionData({ ...questionData, answers: newAnswers });
-                  }}
-                />
-                <label>
-                  <input
-                    type="checkbox"
-                    checked={answer.correct || false}
-                    onChange={(e) => handleCheckboxChange(e, index)}
-                  />
-                  Correct
-                </label>
-              </div>
-            ))
-            : <p>Loading answers...</p>}
-        </div>
-        <button type="submit">Save Changes</button>
-        &nbsp;&nbsp;
-        <Link to={`/edit/game/${gameId}`}>Back to game page</Link>
-      </form>
-    </div>
-  )
-}
-
-export default EditQuestion
+export default EditQuestion;    
