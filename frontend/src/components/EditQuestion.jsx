@@ -162,6 +162,7 @@ const EditQuestion = () => {
           Authorization: `Bearer ${token}`,
         },
       })
+      window.alert('Changes saved successfully.');
 
       fetchQuestion()
     } catch (error) {
