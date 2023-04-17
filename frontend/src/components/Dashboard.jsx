@@ -18,13 +18,13 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import StopIcon from '@mui/icons-material/Stop';
-import FileCopyIcon from '@mui/icons-material/FileCopy';
+import { Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
+
 import { startGame, stopGame } from './GameActions';
 
 
 const Dashboard = () => {
   const { token } = useContext(AppContext)
-  console.log(token)
   const [gamesList, setGamesList] = useState([])
   //
   const [showModal, setShowModal] = useState(false)
@@ -62,6 +62,15 @@ const Dashboard = () => {
           // console.log(gameResponse.data)
           // Add the game ID from the original response data
           gameResponse.data.id = game.id
+
+          // Check game status
+          if (gameResponse.data.active) {
+            console.log('game is active')
+            setGameStatus((prevGameStatus) => ({
+              ...prevGameStatus,
+              [game.id]: gameResponse.data.active,
+            }));
+          }
           return gameResponse.data
         })
 
@@ -185,6 +194,23 @@ const Dashboard = () => {
     }
   }
 
+  // Show session ID modal
+  const GameLinkModal = ({ open, onClose, sessionId, copyLink, copyToClipboard }) => {
+    return (
+      <Dialog open={open} onClose={onClose}>
+        <DialogTitle>Game Session ID</DialogTitle>
+        <DialogContent>
+          <Typography variant="body1">Session ID: {sessionId}</Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => copyToClipboard(copyLink)}>Copy Link</Button>
+          <Button onClick={onClose}>Close</Button>
+        </DialogActions>
+      </Dialog>
+    );
+  };
+
+
   return (
     <Container>
       <Box sx={{ my: 4 }}>
@@ -208,6 +234,7 @@ const Dashboard = () => {
                 (sum, question) => sum + question.time,
                 0
               ) || 0;
+            console.log('game: ', game)
 
             return (
               <Grid key={game.id} item xs={12} sm={6} md={4}>
@@ -260,6 +287,13 @@ const Dashboard = () => {
           })}
         </Grid>
       </Box>
+      <GameLinkModal
+        open={showModal}
+        onClose={() => setShowModal(false)}
+        sessionId={sessionId}
+        copyLink={copyLink}
+        copyToClipboard={copyToClipboard}
+      />
     </Container>
   );
 };

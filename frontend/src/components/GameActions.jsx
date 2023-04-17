@@ -26,14 +26,13 @@ const startGame = async (gameId, token, setCopyLink, setSessionId, setShowModal,
     setCopyLink(newCopyLink);
     setSessionId(ActiveSessionId);
     setShowModal(true);
+    setGameStatus((prevGameStatus) => ({
+      ...prevGameStatus,
+      [gameId]: ActiveSessionId,
+    }));
   } catch (error) {
     console.log(error);
   }
-
-  setGameStatus((prevGameStatus) => ({
-    ...prevGameStatus,
-    [gameId]: true,
-  }));
 };
 
 const stopGame = async (gameId, token, setGameStatus) => {
