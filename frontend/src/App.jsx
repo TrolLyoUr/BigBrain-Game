@@ -27,7 +27,7 @@ import AdminResult from './components/admin/AdminResult'
 // player
 import PlayerGame from './components/player/PlayerGame'
 import PlayerGameNoid from './components/player/playerGameNoid'
-import PlayerResult from './components/player/PlayerResults'
+import PlayerResult from './components/player/PlayerResult'
 
 export const AppContext = createContext()
 
@@ -62,9 +62,6 @@ function App () {
           path: '/edit/game/:gameId/question/:questionId',
           element: <EditQuestion />,
         },
-        // {
-        //   path: '/play/:sessionId', element: <GamePlay />
-        // },
         {
           path: '/admin/game/:gameId/session/:sessionId',
           element: <AdminGame />,

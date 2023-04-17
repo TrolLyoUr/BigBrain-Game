@@ -12,6 +12,11 @@ import {
   Grid,
   IconButton,
   Typography,
+
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
@@ -19,7 +24,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import StopIcon from '@mui/icons-material/Stop';
 // import FileCopyIcon from '@mui/icons-material/FileCopy';
-import { startGame, stopGame } from './GameActions';
+import { startGame, stopGame } from './others/GameActions';
 
 const Dashboard = () => {
   const { token } = useContext(AppContext)
@@ -184,14 +189,14 @@ const Dashboard = () => {
     }
   }
 
-  // const copyToClipboard = async (text) => {
-  //   try {
-  //     await navigator.clipboard.writeText(text)
-  //     alert('Link copied to clipboard!')
-  //   } catch (err) {
-  //     alert('Failed to copy link to clipboard.')
-  //   }
-  // }
+  const copyToClipboard = async (text) => {
+    try {
+      await navigator.clipboard.writeText(text)
+      alert('Link copied to clipboard!')
+    } catch (err) {
+      alert('Failed to copy link to clipboard.')
+    }
+  }
 
   // Show session ID modal
   const GameLinkModal = ({ open, onClose, sessionId, copyLink, copyToClipboard }) => {
@@ -208,7 +213,6 @@ const Dashboard = () => {
       </Dialog>
     );
   };
-
 
   return (
     <Container>
