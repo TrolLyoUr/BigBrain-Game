@@ -1,12 +1,12 @@
 import React from 'react'
 import { useNavigate } from 'react-router-dom'
 
-function SignIn ({ onSuccess }) {
+function SignIn({ onSuccess }) {
   const [email, setEmail] = React.useState('')
   const [password, setPassword] = React.useState('')
   const navigate = useNavigate()
 
-  async function login () {
+  async function login() {
     try {
       const response = await fetch('http://localhost:5005/admin/auth/login', {
         method: 'POST',
@@ -21,9 +21,10 @@ function SignIn ({ onSuccess }) {
 
       if (response.ok) {
         const { token } = await response.json()
-        onSuccess(token)
+
         // Success: lead to dashboard
         navigate('/dashboard')
+        onSuccess(token)
       } else {
         throw new Error(`An error occurred: ${response.statusText}`)
       }
