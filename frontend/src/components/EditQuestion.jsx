@@ -103,15 +103,25 @@ const EditQuestion = () => {
       return false;
     }
 
+    let correctAnswerSelected = false;
     for (let i = 0; i < questionData.answers.length; i++) {
       if (!questionData.answers[i].text.trim()) {
         window.alert('All answers must have text.');
         return false;
       }
+      if (questionData.answers[i].correct) {
+        correctAnswerSelected = true;
+      }
+    }
+
+    if (!correctAnswerSelected) {
+      window.alert('At least one correct answer must be selected.');
+      return false;
     }
 
     return true;
   };
+
 
   const handleSubmit = async (e) => {
     e.preventDefault()
