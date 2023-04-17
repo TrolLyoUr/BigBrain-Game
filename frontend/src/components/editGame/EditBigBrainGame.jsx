@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
-import api from '../api'
-import { AppContext } from '../App'
+import api from '../../api'
+import { AppContext } from '../../App'
 import { useParams, Link as RouterLink } from 'react-router-dom';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -16,8 +16,7 @@ const EditBigBrainGame = () => {
   const [game, setGame] = useState(null);
 
   useEffect(() => {
-    if (token)
-      fetchGame();
+    if (token) fetchGame()
   }, [token, gameId]);
 
   const fetchGame = async () => {
@@ -203,4 +202,4 @@ const EditBigBrainGame = () => {
   )
 };
 
-export default EditBigBrainGame;
+export default EditBigBrainGame

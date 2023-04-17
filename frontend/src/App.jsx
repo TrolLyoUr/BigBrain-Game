@@ -15,14 +15,19 @@ import {
 
 import SignIn from './components/SignIn'
 import SignUp from './components/SignUp'
-import Logout from './components/Logout'
-//
 import Dashboard from './components/Dashboard'
-import EditBigBrainGame from './components/EditBigBrainGame'
-import EditQuestion from './components/EditQuestion'
-//
-// import GamePlay from './components/GamePlay'
-import GameResults from './components/GameResults'
+// editGame
+import EditBigBrainGame from './components/editGame/EditBigBrainGame'
+import EditQuestion from './components/editGame/EditQuestion'
+// others
+import Logout from './components/others/Logout'
+// Admin
+import AdminGame from './components/admin/AdminGame'
+import AdminResult from './components/admin/AdminResult'
+// player
+import PlayerGame from './components/player/PlayerGame'
+import PlayerGameNoid from './components/player/playerGameNoid'
+import PlayerResult from './components/player/PlayerResults'
 
 export const AppContext = createContext()
 
@@ -61,8 +66,29 @@ function App () {
         //   path: '/play/:sessionId', element: <GamePlay />
         // },
         {
-          path: '/game/:gameId/session/:sessionId',
-          element: <GameResults />,
+          path: '/admin/game/:gameId/session/:sessionId',
+          element: <AdminGame />,
+        },
+        {
+          path: '/admin/result/game/:gameId/session/:sessionId',
+          element: <AdminResult />,
+        },
+      ],
+    },
+    {
+      element: <PlayerLayout />,
+      children: [
+        {
+          path: '/player/game/:gameId/',
+          element: <PlayerGameNoid />,
+        },
+        {
+          path: '/player/game/:gameId/session/:sessionId',
+          element: <PlayerGame />,
+        },
+        {
+          path: '/player/result/game/:gameId/session/:sessionId',
+          element: <PlayerResult />,
         },
       ],
     },
@@ -97,20 +123,24 @@ function NavLayout () {
 }
 
 function DashboardLayout () {
-  // const { token, setToken } = useContext(AppContext)
-  // const navigate = useNavigate()
-
-  // const logout = () => {
-  //   setToken(null)
-  //   localStorage.removeItem('token')
-  //   navigate('/')
-  // }
-
   return (
     <>
       <nav>
         <span>
           <Logout />
+        </span>
+      </nav>
+      <Outlet />
+    </>
+  )
+}
+
+function PlayerLayout () {
+  return (
+    <>
+      <nav>
+        <span>
+          {/*  */}
         </span>
       </nav>
       <Outlet />

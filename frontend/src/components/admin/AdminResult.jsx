@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react'
-import api from '../api'
-import { AppContext } from '../App'
+import api from '../../api'
+import { AppContext } from '../../App'
 import { useParams, Link } from 'react-router-dom'
 import { Bar, Line } from 'react-chartjs-2'
 

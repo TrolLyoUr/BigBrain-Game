@@ -18,20 +18,19 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import StopIcon from '@mui/icons-material/Stop';
-import { Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
-
+// import FileCopyIcon from '@mui/icons-material/FileCopy';
 import { startGame, stopGame } from './GameActions';
-
 
 const Dashboard = () => {
   const { token } = useContext(AppContext)
   const [gamesList, setGamesList] = useState([])
-  //
+
   const [showModal, setShowModal] = useState(false)
   const [sessionId, setSessionId] = useState(null)
   const [copyLink, setCopyLink] = useState('')
+  console.log(copyLink, sessionId, showModal)
+  // const defaultThumbnailUrl = `${process.env.PUBLIC_URL}/assets/kahoot.png`
   const [gameStatus, setGameStatus] = useState({})
-  const defaultThumbnailUrl = `${process.env.PUBLIC_URL}/assets/kahoot.png`
 
   useEffect(() => {
     if (token) {
@@ -185,14 +184,14 @@ const Dashboard = () => {
     }
   }
 
-  const copyToClipboard = async (text) => {
-    try {
-      await navigator.clipboard.writeText(text)
-      alert('Link copied to clipboard!')
-    } catch (err) {
-      alert('Failed to copy link to clipboard.')
-    }
-  }
+  // const copyToClipboard = async (text) => {
+  //   try {
+  //     await navigator.clipboard.writeText(text)
+  //     alert('Link copied to clipboard!')
+  //   } catch (err) {
+  //     alert('Failed to copy link to clipboard.')
+  //   }
+  // }
 
   // Show session ID modal
   const GameLinkModal = ({ open, onClose, sessionId, copyLink, copyToClipboard }) => {

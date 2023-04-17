@@ -1,11 +1,11 @@
 import React from 'react'
 
-function SignUp({ onSuccess }) {
+function SignUp ({ onSuccess }) {
   const [email, setEmail] = React.useState('')
   const [password, setPassword] = React.useState('')
   const [name, setName] = React.useState('')
 
-  async function register() {
+  async function register () {
     try {
       const response = await fetch(
         'http://localhost:5005/admin/auth/register',
@@ -23,8 +23,7 @@ function SignUp({ onSuccess }) {
       )
       if (response.ok) {
         window.alert('Success: Account created')
-      }
-      else {
+      } else {
         throw new Error(`An error occurred: ${response.statusText}`)
       }
 

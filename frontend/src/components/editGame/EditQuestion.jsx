@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { useParams, Link as RouterLink } from 'react-router-dom';
-import api from '../api';
-import { AppContext } from '../App';
+import api from '../../api';
+import { AppContext } from '../../App';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Checkbox from '@mui/material/Checkbox';
@@ -36,8 +36,7 @@ const EditQuestion = () => {
   const [answerCount, setAnswerCount] = useState(questionData.answers.length)
 
   useEffect(() => {
-    if (token)
-      fetchQuestion()
+    if (token) fetchQuestion()
   }, [token, gameId, questionId])
 
   useEffect(() => {
@@ -121,7 +120,6 @@ const EditQuestion = () => {
 
     return true;
   };
-
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -214,20 +212,19 @@ const EditQuestion = () => {
   const handleCheckboxChange = (e, index) => {
     if (!questionData.answers[index].text.trim()) {
       e.preventDefault();
-      window.alert("Answer text cannot be empty.");
+      window.alert('Answer text cannot be empty.');
       return;
     }
 
     const newAnswers = [...questionData.answers];
 
-    if (questionData.type === "single" && e.target.checked) {
+    if (questionData.type === 'single' && e.target.checked) {
       newAnswers.forEach((answer) => (answer.correct = false));
     }
 
     newAnswers[index].correct = e.target.checked;
     setQuestionData({ ...questionData, answers: newAnswers });
   };
-
 
   return (
     <Container>
@@ -389,4 +386,4 @@ const EditQuestion = () => {
   );
 };
 
-export default EditQuestion;    
+export default EditQuestion;
