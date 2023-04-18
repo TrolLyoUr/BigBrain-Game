@@ -25,7 +25,7 @@ const AdminResult = () => {
 
   // check finished
   useEffect(() => {
-    if (gameStatus && !gameStatus.active) {
+    if (gameStatus && !gameStatus.results.active) {
       fetchResults()
     }
   }, [gameStatus])
@@ -100,7 +100,11 @@ const AdminResult = () => {
   }
 
   if (!gameStatus) {
-    return <div>Loading...</div>
+    return (
+      <>
+        <div>Loading...</div>
+      </>
+    )
   }
 
   const renderResults = () => {
@@ -216,7 +220,7 @@ const AdminResult = () => {
 
   return (
     <div>
-      {gameStatus.active
+      {gameStatus.results.active
         ? (
         <>
           <button onClick={advanceToNextQuestion}>Next Question</button>
