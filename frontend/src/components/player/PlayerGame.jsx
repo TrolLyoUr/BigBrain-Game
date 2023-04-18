@@ -29,39 +29,52 @@ const PlayerGame = () => {
   const [gameStarted, setGameStarted] = useState(false);
   const [currentQuestion, setCurrentQuestion] = useState(null);
   const [timer, setTimer] = useState(null);
-  const [userAnswers, setUserAnswers] = useState([]);
   const [showResults, setShowResults] = useState(false);
   const [timeRemaining, setTimeRemaining] = useState(0);
   const [answers, setAnswers] = useState([]);
   const [submitted, setSubmitted] = useState(false);
   const [selectedAnswers, setSelectedAnswers] = useState([]);
+  const [results, setResults] = useState([]);
+  const [loadingResults, setLoadingResults] = useState(true);
+  const [questions, setQuestions] = useState([]);
+  const [gameEnded, setGameEnded] = useState(false);
+
+
 
 
 
   // Polling for game status and question
   useEffect(() => {
-    if (hasJoined) {
+    if (hasJoined && !gameEnded) {
       if (gameStarted && !showResults) {
         fetchQuestion();
       }
+      else {
+        const statusInterval = setInterval(() => {
+          if (!gameStarted)
+            fetchGameStatus();
+          else if (gameStarted && showResults) {
+            fetchGameStatus();
+            fetchQuestion();
+          }
+        }, 1000);
 
-      const statusInterval = setInterval(() => {
-        if (!gameStarted)
-          fetchGameStatus();
-        else if (gameStarted && showResults) {
-          fetchQuestion();
-        }
-      }, 1000);
-
-      return () => {
-        clearInterval(statusInterval); // Clear the interval when the component is unmounted or the game has started
-      };
+        return () => {
+          clearInterval(statusInterval); // Clear the interval when the component is unmounted or the game has started
+        };
+      }
     }
-  }, [gameStarted, hasJoined, showResults]);
+  }, [gameStarted, hasJoined, showResults, gameEnded]);
+
+  useEffect(() => {
+    if (gameEnded && loadingResults) {
+      fetchResults();
+    }
+  }, [gameEnded]);
 
   // Hook to set the timer for the current question
   useEffect(() => {
-    if (gameStarted && currentQuestion && !showResults) {
+    if (gameStarted && currentQuestion && !showResults && !gameEnded) {
       // Set the initial time remaining
       setTimeRemaining(currentQuestion.time);
       console.log('Setting time remaining to', currentQuestion.time);
@@ -130,6 +143,13 @@ const PlayerGame = () => {
           setSubmitted(false);
           setShowResults(false);
           setCurrentQuestion(questionResponse.data.question);
+          setQuestions((prevQuestions) => {
+            if (!prevQuestions.find((q) => q.id === questionResponse.data.question.id)) {
+              return [...prevQuestions, questionResponse.data.question];
+            } else {
+              return prevQuestions;
+            }
+          });
         }
       }
       else {
@@ -155,6 +175,10 @@ const PlayerGame = () => {
       }
     }
     catch (error) {
+      if (gameStarted && currentQuestion) {
+        console.log('Game ended');
+        setGameEnded(true);
+      }
       console.log(error);
     }
   };
@@ -171,6 +195,7 @@ const PlayerGame = () => {
       else {
         alert('Error fetching answers');
       }
+
     }
     catch (error) {
       console.log(error);
@@ -202,6 +227,25 @@ const PlayerGame = () => {
     console.log('Submitting answer', selectedAnswers);
   };
 
+  // Get results
+  const fetchResults = async () => {
+    setLoadingResults(true);
+    try {
+      const resultsResponse = await api.get(`/play/${playerId}/results`);
+      if (resultsResponse.status === 200) {
+        setResults(resultsResponse.data);
+      } else {
+        alert('Error fetching results');
+      }
+    } catch (error) {
+      console.log(error);
+    }
+    setLoadingResults(false);
+  };
+
+
+  // Fuctions
+
   // Handle radio button change
   const handleRadioChange = (event) => {
     const value = parseInt(event.target.value);
@@ -217,6 +261,90 @@ const PlayerGame = () => {
       setSelectedAnswers((prev) => prev.filter((answer) => answer !== value));
     }
   };
+
+  // Calculate the score for each question
+  function calculateScores(results, questions) {
+    return results.map((result, index) => {
+      const question = questions[index];
+      const timeLimit = question.time;
+      const timeSpent = (new Date(result.answeredAt) - new Date(result.questionStartedAt)) / 1000;
+
+      if (result.correct) {
+        const timeRatio = 1 + (timeLimit - timeSpent) / timeLimit;
+        const score = Math.round(question.points * Math.min(2, timeRatio));
+        return score;
+      } else {
+        return 0;
+      }
+    });
+  }
+
+
+  // Render functions
+  const GameResults = ({ results, questions }) => {
+    const [showCalculationDetails, setShowCalculationDetails] = useState(false);
+    // Calculate the score
+    const scores = calculateScores(results, questions);
+    console.log(scores); // This will show the scores for each question
+    const sum = scores.reduce((acc, cur) => acc + cur, 0);
+
+    return (
+      <Container>
+        <Box sx={{ my: 4 }}>
+          <Typography variant="h4" component="h1" align="center" gutterBottom>
+            Game Results
+          </Typography>
+          <Box sx={{ mt: 2 }}>
+            <Typography variant="h5" component="h2" align="center">
+              Your score: {sum}
+              <Button
+                size="small"
+                variant="outlined"
+                onClick={() => setShowCalculationDetails(!showCalculationDetails)}
+              >
+                {showCalculationDetails ? "Hide Details" : "Show Details"}
+              </Button>
+              {showCalculationDetails && (
+                <Typography variant="body1" component="span">
+                  {" "}
+                  (The total score is calculated by sun of each question.
+                  The score for each question is calculated by scale up(1x to 2x) the basic score accoding to the time spent that player answered the question, and then round to integer.)
+                </Typography>
+              )}
+            </Typography>
+          </Box>
+          <Box sx={{ mt: 2 }}>
+            {results.map((result, index) => {
+              const question = questions[index];
+              const isCorrect = result.correct;
+              const playerScore = scores[index];
+              return (
+                <Box key={index} sx={{ mb: 3 }}>
+                  <Typography variant="h5" component="h2">
+                    Question {index + 1}: {question.text}
+                  </Typography>
+                  <Typography variant="h6" component="h3">
+                    Basic score: {question.points}
+                  </Typography>
+                  <Typography variant="h6" component="h3">
+                    Your score: {playerScore}
+                  </Typography>
+                  <Typography
+                    variant="h6"
+                    component="h3"
+                    color={isCorrect ? green[500] : red[500]}
+                  >
+                    {isCorrect ? 'Correct' : 'Incorrect'}
+                  </Typography>
+                </Box>
+              );
+            })}
+          </Box>
+        </Box>
+      </Container>
+    );
+  };
+
 
 
   // Render page
@@ -264,6 +392,30 @@ const PlayerGame = () => {
         </Box>
       </Container>
     );
+  }
+
+  // Game results page
+  if (gameEnded) {
+    console.log(questions)
+    console.log(results)
+    console.log(loadingResults)
+    if (loadingResults) {
+      return (
+        <Container>
+          <Box sx={{ my: 4 }}>
+            <CircularProgress />
+          </Box>
+        </Container>
+      );
+    }
+    else {
+      return (
+        <GameResults
+          results={results}
+          questions={questions}
+        />
+      );
+    }
   }
 
   // Game page
