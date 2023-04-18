@@ -282,7 +282,7 @@ const Dashboard = () => {
                           )
                         }
                       >
-                        <LinkIcon />
+                        <PlayArrowIcon />
                       </IconButton>
                     )}
                     {gameStatus[game.id] && (
@@ -307,7 +307,7 @@ const Dashboard = () => {
                         component={RouterLink}
                         to={`/admin/result/game/${game.id}/session/${sessionId}`}
                       >
-                        <PlayArrowIcon />
+                        <LinkIcon />
                       </IconButton>
                     )}
                   </CardActions>
