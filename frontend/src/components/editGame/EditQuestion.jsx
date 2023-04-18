@@ -24,10 +24,7 @@ const EditQuestion = () => {
     text: '',
     time: 0,
     points: 0,
-    media: {
-      type: '',
-      url: '',
-    },
+    mediaUrl: '',
     answers: [
       { text: '', correct: false },
       { text: '', correct: false },
@@ -133,7 +130,7 @@ const EditQuestion = () => {
       text: questionData.text,
       time: questionData.time,
       points: questionData.points,
-      media: questionData.media,
+      mediaUrl: questionData.mediaUrl,
       answers: questionData.answers,
     }
     //
@@ -301,11 +298,11 @@ const EditQuestion = () => {
               label="Media (YouTube URL or Photo)"
               variant="outlined"
               fullWidth
-              value={questionData.media ? questionData.media.url : ''}
+              value={questionData.mediaUrl ? questionData.mediaUrl : ''}
               onChange={(e) =>
                 setQuestionData({
                   ...questionData,
-                  media: { ...questionData.media, url: e.target.value },
+                  mediaUrl: { ...questionData.mediaUrl, url: e.target.value },
                 })
               }
             />

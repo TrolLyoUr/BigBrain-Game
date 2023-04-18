@@ -31,7 +31,7 @@ import PlayerResult from './components/player/PlayerResult'
 
 export const AppContext = createContext()
 
-function App () {
+function App() {
   const [token, setToken] = useState(null)
 
   const manageTokenSet = (token) => {
@@ -76,15 +76,15 @@ function App () {
       element: <PlayerLayout />,
       children: [
         {
-          path: '/player/game/:gameId/',
+          path: '/player',
           element: <PlayerGameNoid />,
         },
         {
-          path: '/player/game/:gameId/session/:sessionId',
+          path: '/player/game/session/:sessionId',
           element: <PlayerGame />,
         },
         {
-          path: '/player/result/game/:gameId/session/:sessionId',
+          path: '/player/result/session/:sessionId',
           element: <PlayerResult />,
         },
       ],
@@ -102,7 +102,7 @@ function App () {
   )
 }
 
-function NavLayout () {
+function NavLayout() {
   return (
     <>
       <nav>
@@ -119,7 +119,7 @@ function NavLayout () {
   )
 }
 
-function DashboardLayout () {
+function DashboardLayout() {
   return (
     <>
       <nav>
@@ -132,7 +132,7 @@ function DashboardLayout () {
   )
 }
 
-function PlayerLayout () {
+function PlayerLayout() {
   return (
     <>
       <nav>
