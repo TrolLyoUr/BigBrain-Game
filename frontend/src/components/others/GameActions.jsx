@@ -1,4 +1,6 @@
 import api from '../../api';
+// import { useNavigate } from 'react-router-dom';
+import Swal from 'sweetalert2'
 
 const startGame = async (gameId, token, setCopyLink, setSessionId, setShowModal, setGameStatus) => {
   try {
@@ -34,7 +36,7 @@ const startGame = async (gameId, token, setCopyLink, setSessionId, setShowModal,
   }
 };
 
-const stopGame = async (gameId, token, setGameStatus) => {
+const stopGame = async (gameId, token, setGameStatus, sessionId, navigate) => {
   try {
     await api.post(
       `/admin/quiz/${gameId}/end`,
@@ -47,9 +49,18 @@ const stopGame = async (gameId, token, setGameStatus) => {
       }
     );
 
-    if (window.confirm('Would you like to view the results?')) {
-      // Redirect to the results page
-    }
+    Swal.fire({
+      title: 'View Results?',
+      text: 'Would you like to view the results?',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Yes',
+      cancelButtonText: 'No',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        navigate(`/admin/result/game/${gameId}/session/${sessionId}`);
+      }
+    });
   } catch (error) {
     console.log(error);
   }

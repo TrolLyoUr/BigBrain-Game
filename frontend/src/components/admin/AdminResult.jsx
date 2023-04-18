@@ -2,13 +2,19 @@ import React, { useState, useEffect, useContext } from 'react'
 import api from '../../api'
 import { AppContext } from '../../App'
 import { useParams, Link } from 'react-router-dom'
+// import { Chart } from 'chart.js'
 import { Bar, Line } from 'react-chartjs-2'
 
-const GameResults = () => {
+const AdminResult = () => {
   const { token } = useContext(AppContext)
   const { gameId, sessionId } = useParams()
   const [gameStatus, setGameStatus] = useState(null)
   const [results, setResults] = useState(null)
+  const defaultPlayer = {
+    name: 'Default Player',
+    answers: [],
+  }
+  // Chart.register(Bar, Line)
 
   useEffect(() => {
     // valid token check
@@ -43,6 +49,7 @@ const GameResults = () => {
       console.log(error)
     }
   }
+
   // fetch game results
   const fetchResults = async () => {
     try {
@@ -52,9 +59,22 @@ const GameResults = () => {
           Authorization: `Bearer ${token}`,
         },
       })
-      // result data
-      console.log('resultsData', resultsData.data)
-      setResults(resultsData.data)
+      // Log the resultsData object to inspect the API response
+      console.log('resultsData:', resultsData.data.results)
+
+      // Check if resultsData.data.results is an array
+      if (Array.isArray(resultsData.data.results)) {
+        if (resultsData.data.results.length === 0) {
+          setResults([defaultPlayer])
+        } else {
+          setResults(resultsData.data.results)
+        }
+      } else {
+        console.error(
+          'resultsData.data.results is not an array:',
+          resultsData.data.results
+        )
+      }
     } catch (error) {
       console.log(error)
     }
@@ -63,25 +83,24 @@ const GameResults = () => {
   // advancing to the next question.
   const advanceToNextQuestion = async () => {
     try {
-      await api.post(`/admin/quiz/${gameId}/advance`, {},
+      await api.post(
+        `/admin/quiz/${gameId}/advance`,
+        {},
         {
           headers: {
             'Content-type': 'application/json',
             Authorization: `Bearer ${token}`,
           },
-        })
+        }
+      )
       fetchStatus()
     } catch (error) {
       console.log(error)
     }
-  };
+  }
 
   if (!gameStatus) {
-    return (
-      <div>
-        Loading... &nbsp;&nbsp; <Link to={'/Dashboard'}> Stop Game </Link>
-      </div>
-    )
+    return <div>Loading...</div>
   }
 
   const renderResults = () => {
@@ -138,11 +157,11 @@ const GameResults = () => {
     }
 
     // Top 5 users and their scores
-    const topUsers = results.slice(0, 5).map((user, index) => (
-    <tr key={index}>
-      <td>{user.name}</td>
-      <td>{user.answers.filter((answer) => answer.correct).length}</td>
-    </tr>
+    const topUsers = results.slice(0, 5).map((player, index) => (
+  <tr key={index}>
+    <td>{player.name}</td>
+    <td>{player.answers.filter((answer) => answer.correct).length}</td>
+  </tr>
     ))
 
     // Chart: Percentage of people (Y axis) got certain questions (X axis) correct
@@ -174,24 +193,24 @@ const GameResults = () => {
     }
 
     return (
-    <>
-      <h2>Game Results</h2>
-      <h3>Top 5 Users</h3>
-      <table>
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Score</th>
-          </tr>
-        </thead>
-        <tbody>{topUsers}</tbody>
-      </table>
-      <h3>Percentage of Correct Answers by Question</h3>
-      <Bar data={questionsCorrectData} />
-      <h3>Average Response Time by Question</h3>
-      <Line data={averageResponseTimeData} />
-      {/* Render any other interesting information you see fit */}
-    </>
+      <>
+        <h2>Game Results</h2>
+        <h3>Top 5 Users</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Score</th>
+            </tr>
+          </thead>
+          <tbody>{topUsers}</tbody>
+        </table>
+        <h3>Percentage of Correct Answers by Question</h3>
+        <Bar data={questionsCorrectData} />
+        <h3>Average Response Time by Question</h3>
+        <Line data={averageResponseTimeData} />
+        {/* Render any other interesting information you see fit */}
+      </>
     )
   }
 
@@ -199,10 +218,10 @@ const GameResults = () => {
     <div>
       {gameStatus.active
         ? (
-          <>
+        <>
           <button onClick={advanceToNextQuestion}>Next Question</button>
           <Link to={'/Dashboard'}> Stop Game </Link>
-          </>
+        </>
           )
         : (
             renderResults()
@@ -210,5 +229,4 @@ const GameResults = () => {
     </div>
   )
 }
-
-export default GameResults
+export default AdminResult

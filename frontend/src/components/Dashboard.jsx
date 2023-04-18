@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useContext } from 'react';
-import { Link as RouterLink } from 'react-router-dom';
+import React, { useState, useEffect, useContext } from 'react'
+import { useNavigate, Link as RouterLink } from 'react-router-dom';
 import api from '../api';
 import { AppContext } from '../App';
 import {
@@ -21,7 +21,8 @@ import {
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
-import PlayArrowIcon from '@mui/icons-material/PlayArrow';
+// import PlayArrowIcon from '@mui/icons-material/PlayArrow';
+import LinkIcon from '@mui/icons-material/Link'
 import StopIcon from '@mui/icons-material/Stop';
 // import FileCopyIcon from '@mui/icons-material/FileCopy';
 import { startGame, stopGame } from './others/GameActions';
@@ -33,9 +34,9 @@ const Dashboard = () => {
   const [showModal, setShowModal] = useState(false)
   const [sessionId, setSessionId] = useState(null)
   const [copyLink, setCopyLink] = useState('')
-  console.log(copyLink, sessionId, showModal)
   // const defaultThumbnailUrl = `${process.env.PUBLIC_URL}/assets/kahoot.png`
   const [gameStatus, setGameStatus] = useState({})
+  const navigate = useNavigate()
 
   useEffect(() => {
     if (token) {
@@ -270,23 +271,49 @@ const Dashboard = () => {
                     {!gameStatus[game.id] && (
                       <IconButton
                         aria-label="start"
-                        onClick={() => startGame(game.id, token, setCopyLink, setSessionId, setShowModal, setGameStatus)}
+                        onClick={() =>
+                          startGame(
+                            game.id,
+                            token,
+                            setCopyLink,
+                            setSessionId,
+                            setShowModal,
+                            setGameStatus
+                          )
+                        }
                       >
-                        <PlayArrowIcon />
+                        <LinkIcon />
                       </IconButton>
                     )}
                     {gameStatus[game.id] && (
                       <IconButton
                         aria-label="stop"
-                        onClick={() => stopGame(game.id, token, setGameStatus)}
+                        onClick={() =>
+                          stopGame(
+                            game.id,
+                            token,
+                            setGameStatus,
+                            sessionId,
+                            navigate
+                          )
+                        }
                       >
                         <StopIcon />
                       </IconButton>
                     )}
+                    {/* {gameStatus[game.id] && (
+                      <IconButton
+                        aria-label="Admin"
+                        component={RouterLink}
+                        to={`/admin/game/${game.id}/session/${sessionId}`}
+                      >
+                        <PlayArrowIcon />
+                      </IconButton>
+                    )} */}
                   </CardActions>
                 </Card>
               </Grid>
-            );
+            )
           })}
         </Grid>
       </Box>
