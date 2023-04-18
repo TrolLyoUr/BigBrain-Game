@@ -19,6 +19,8 @@ import {
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import ErrorIcon from '@mui/icons-material/Error';
 import { green, red } from '@mui/material/colors';
+import WaitingForGame from './Lobby';
+import useStyles from './GameStyle';
 
 
 const PlayerGame = () => {
@@ -40,6 +42,7 @@ const PlayerGame = () => {
   const [questions, setQuestions] = useState([]);
   const [gameEnded, setGameEnded] = useState(false);
 
+  const classes = useStyles();
 
 
 
@@ -347,7 +350,7 @@ const PlayerGame = () => {
   // Join session page
   if (!hasJoined) {
     return (
-      <Container>
+      <Container className={classes.root}>
         <Box sx={{ my: 4 }}>
           <Typography variant="h4" component="h1">
             Enter your name
@@ -379,13 +382,7 @@ const PlayerGame = () => {
   // Waiting for game to start page
   if (!currentQuestion) {
     return (
-      <Container>
-        <Box sx={{ my: 4 }}>
-          <Typography variant="h4" component="h1">
-            Please wait...
-          </Typography>
-        </Box>
-      </Container>
+      <WaitingForGame />
     );
   }
 
@@ -415,10 +412,10 @@ const PlayerGame = () => {
 
   // Game page
   return (
-    <Container>
-      <Box sx={{ my: 4 }}>
-        <Paper elevation={3} sx={{ p: 3, borderRadius: 2 }}>
-          <Typography variant="h4" component="h1" align="center" gutterBottom>
+    <Container className={classes.root}>
+      <Box>
+        <Paper elevation={3} className={classes.questionContainer}>
+          <Typography variant="h4" component="h1" align="center" gutterBottom className={classes.questionText}>
             {currentQuestion ? currentQuestion.text : 'Waiting for question'}
           </Typography>
           {currentQuestion && currentQuestion.mediaUrl && (
@@ -441,11 +438,11 @@ const PlayerGame = () => {
                 : `Time's up`}
             </Typography>
           </Box>
-
-          <Box sx={{ mt: 2 }}>
+          <Box>
             <LinearProgress
               variant="determinate"
               value={100 - (timeRemaining / currentQuestion?.time) * 100}
+              className={classes.timerProgress}
             />
           </Box>
           {showResults ? (
@@ -477,7 +474,7 @@ const PlayerGame = () => {
               </Box>
             </Box>
           ) : (
-            <Box sx={{ mt: 2 }}>
+            <Box>
               <FormControl component="fieldset">
                 {currentQuestion.type === 'single' ? (
                   <RadioGroup
@@ -510,12 +507,13 @@ const PlayerGame = () => {
                   ))
                 )}
               </FormControl>
-              <Box sx={{ mt: 2 }}>
+              <Box>
                 <Button
                   variant="contained"
                   color="primary"
                   onClick={() => submitAnswer(selectedAnswers)}
                   disabled={submitted || selectedAnswers.length === 0}
+                  className={classes.answerButton}
                 >
                   Submit Answer
                 </Button>
