@@ -82,10 +82,6 @@ function App() {
           path: '/player/game/session/:sessionId',
           element: <PlayerGame />,
         },
-        {
-          path: '/player/result/session/:sessionId',
-          element: <PlayerResult />,
-        },
       ],
     },
   ])
