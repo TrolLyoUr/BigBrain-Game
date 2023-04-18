@@ -16,8 +16,8 @@ export const quizQuestionPublicReturn = question => {
     time: question.time,
     type: question.type,
     answers: newAnswers,
-    mediaType: question.media[type],
-    mediaUrl: question.media[url],
+    mediaType: question.media.type,
+    mediaUrl: question.media.url,
   };
 };
 

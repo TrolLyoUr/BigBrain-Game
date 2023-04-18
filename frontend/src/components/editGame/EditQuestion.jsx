@@ -302,7 +302,7 @@ const EditQuestion = () => {
               <Select
                 labelId="mediaType-label"
                 id="mediaType"
-                value={questionData.media[type] || ''}
+                value={questionData.media.type || ''}
                 onChange={(e) =>
                   setQuestionData({
                     ...questionData,
@@ -319,10 +319,10 @@ const EditQuestion = () => {
           {/* Media */}
           <Box mt={2}>
             <TextField
-              label={`Media (${questionData.media[type] === 'video' ? 'video URL' : 'Image URL'})`}
+              label={`Media (${questionData.media.type === 'video' ? 'video URL' : 'Image URL'})`}
               variant="outlined"
               fullWidth
-              value={questionData.media[url] || ''}
+              value={questionData.media.url || ''}
               onChange={(e) =>
                 setQuestionData({
                   ...questionData,
