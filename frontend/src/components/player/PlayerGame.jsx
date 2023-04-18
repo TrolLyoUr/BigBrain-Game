@@ -28,6 +28,7 @@ const PlayerGame = () => {
   const [hasJoined, setHasJoined] = useState(false);
   const [gameStarted, setGameStarted] = useState(false);
   const [currentQuestion, setCurrentQuestion] = useState(null);
+  const [currentQuestionId, setCurrentQuestionId] = useState(0);
   const [timer, setTimer] = useState(null);
   const [showResults, setShowResults] = useState(false);
   const [timeRemaining, setTimeRemaining] = useState(0);
@@ -46,23 +47,18 @@ const PlayerGame = () => {
   // Polling for game status and question
   useEffect(() => {
     if (hasJoined && !gameEnded) {
-      if (gameStarted && !showResults) {
-        fetchQuestion();
-      }
-      else {
-        const statusInterval = setInterval(() => {
-          if (!gameStarted)
-            fetchGameStatus();
-          else if (gameStarted && showResults) {
-            fetchGameStatus();
-            fetchQuestion();
-          }
-        }, 1000);
+      const statusInterval = setInterval(() => {
+        if (!gameStarted)
+          fetchGameStatus();
+        else {
+          fetchGameStatus();
+          fetchQuestion();
+        }
+      }, 1000);
 
-        return () => {
-          clearInterval(statusInterval); // Clear the interval when the component is unmounted or the game has started
-        };
-      }
+      return () => {
+        clearInterval(statusInterval); // Clear the interval when the component is unmounted or the game has started
+      };
     }
   }, [gameStarted, hasJoined, showResults, gameEnded]);
 
@@ -98,14 +94,13 @@ const PlayerGame = () => {
         clearTimeout(timerId);
       };
     }
-  }, [gameStarted, currentQuestion]);
+  }, [gameStarted, currentQuestionId, gameEnded]);
 
 
   // API set
 
   // Join session
   const joinSession = async () => {
-
     try {
       const joinResponse = await api.post(`/play/join/${sessionId}`,
         { 'name': playerName }
@@ -129,7 +124,6 @@ const PlayerGame = () => {
 
   // Fetch question if there is a new question
   const fetchQuestion = async () => {
-
     console.log('Fetching question');
     try {
       const questionResponse = await api.get(`/play/${playerId}/question`, {
@@ -139,10 +133,9 @@ const PlayerGame = () => {
         },
       })
       if (questionResponse.status === 200) {
-        if (!currentQuestion || (currentQuestion.id !== questionResponse.data.question.id)) {
+        if (!currentQuestion || (currentQuestionId !== questionResponse.data.question.id)) {
           setSubmitted(false);
           setShowResults(false);
-          setCurrentQuestion(questionResponse.data.question);
           setQuestions((prevQuestions) => {
             if (!prevQuestions.find((q) => q.id === questionResponse.data.question.id)) {
               return [...prevQuestions, questionResponse.data.question];
@@ -150,6 +143,8 @@ const PlayerGame = () => {
               return prevQuestions;
             }
           });
+          setCurrentQuestion(questionResponse.data.question);
+          setCurrentQuestionId(questionResponse.data.question.id);
         }
       }
       else {
@@ -166,7 +161,7 @@ const PlayerGame = () => {
     try {
       const statusResponse = await api.get(`/play/${playerId}/status`)
       if (statusResponse.status === 200) {
-        if (statusResponse.data.started) {
+        if (statusResponse.data.started && !gameStarted) {
           setGameStarted(true);
         }
       }
@@ -175,7 +170,7 @@ const PlayerGame = () => {
       }
     }
     catch (error) {
-      if (gameStarted && currentQuestion) {
+      if (gameStarted) {
         console.log('Game ended');
         setGameEnded(true);
       }
@@ -428,7 +423,7 @@ const PlayerGame = () => {
           </Typography>
           {currentQuestion && currentQuestion.mediaUrl && (
             <Box sx={{ my: 2, textAlign: 'center' }}>
-              {questionData.mediaType === 'video' ? (
+              {currentQuestion.mediaType === 'video' ? (
                 <video src={currentQuestion.mediaUrl}
                   alt="question"
                   style={{ maxWidth: '100%', maxHeight: 300 }} />
