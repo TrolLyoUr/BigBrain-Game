@@ -24,7 +24,10 @@ const EditQuestion = () => {
     text: '',
     time: 0,
     points: 0,
-    mediaUrl: '',
+    media: {
+      type: '',
+      url: '',
+    },
     answers: [
       { text: '', correct: false },
       { text: '', correct: false },
@@ -130,7 +133,7 @@ const EditQuestion = () => {
       text: questionData.text,
       time: questionData.time,
       points: questionData.points,
-      mediaUrl: questionData.mediaUrl,
+      media: questionData.media,
       answers: questionData.answers,
     }
     //
@@ -292,17 +295,38 @@ const EditQuestion = () => {
               }
             />
           </Box>
+          {/* Media type */}
+          <Box mt={2}>
+            <FormControl fullWidth variant="outlined">
+              <InputLabel id="mediaType-label">Media Type</InputLabel>
+              <Select
+                labelId="mediaType-label"
+                id="mediaType"
+                value={questionData.media[type] || ''}
+                onChange={(e) =>
+                  setQuestionData({
+                    ...questionData,
+                    media: { ...questionData.media, type: e.target.value },
+                  })
+                }
+                label="Media Type"
+              >
+                <MenuItem value="image">Image</MenuItem>
+                <MenuItem value="video">Video</MenuItem>
+              </Select>
+            </FormControl>
+          </Box>
           {/* Media */}
           <Box mt={2}>
             <TextField
-              label="Media (YouTube URL or Photo)"
+              label={`Media (${questionData.media[type] === 'video' ? 'video URL' : 'Image URL'})`}
               variant="outlined"
               fullWidth
-              value={questionData.mediaUrl ? questionData.mediaUrl : ''}
+              value={questionData.media[url] || ''}
               onChange={(e) =>
                 setQuestionData({
                   ...questionData,
-                  mediaUrl: { ...questionData.mediaUrl, url: e.target.value },
+                  media: { ...questionData.media, url: e.target.value },
                 })
               }
             />

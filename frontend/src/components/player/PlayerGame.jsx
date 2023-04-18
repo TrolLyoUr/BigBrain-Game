@@ -8,26 +8,91 @@ import {
   TextField,
   Typography,
   CircularProgress,
+  Radio,
+  RadioGroup,
+  FormControl,
+  FormControlLabel,
+  Checkbox,
+  Paper,
+  LinearProgress,
 } from '@mui/material';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import ErrorIcon from '@mui/icons-material/Error';
+import { green, red } from '@mui/material/colors';
+
 
 const PlayerGame = () => {
   const { sessionId } = useParams();
   const [playerName, setPlayerName] = useState('');
   const [playerId, setPlayerId] = useState('');
   const [hasJoined, setHasJoined] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
   const [gameStarted, setGameStarted] = useState(false);
-  //const [previousQuestions, setPreviousQuestions] = useState(null);
   const [currentQuestion, setCurrentQuestion] = useState(null);
   const [timer, setTimer] = useState(null);
   const [userAnswers, setUserAnswers] = useState([]);
   const [showResults, setShowResults] = useState(false);
   const [timeRemaining, setTimeRemaining] = useState(0);
+  const [answers, setAnswers] = useState([]);
+  const [submitted, setSubmitted] = useState(false);
+  const [selectedAnswers, setSelectedAnswers] = useState([]);
 
 
-  // Replace with actual API calls
+
+  // Polling for game status and question
+  useEffect(() => {
+    if (hasJoined) {
+      if (gameStarted && !showResults) {
+        fetchQuestion();
+      }
+
+      const statusInterval = setInterval(() => {
+        if (!gameStarted)
+          fetchGameStatus();
+        else if (gameStarted && showResults) {
+          fetchQuestion();
+        }
+      }, 1000);
+
+      return () => {
+        clearInterval(statusInterval); // Clear the interval when the component is unmounted or the game has started
+      };
+    }
+  }, [gameStarted, hasJoined, showResults]);
+
+  // Hook to set the timer for the current question
+  useEffect(() => {
+    if (gameStarted && currentQuestion && !showResults) {
+      // Set the initial time remaining
+      setTimeRemaining(currentQuestion.time);
+      console.log('Setting time remaining to', currentQuestion.time);
+      console.log('time remain', timeRemaining);
+
+      // Update the time remaining every second
+      const countdownTimer = setInterval(() => {
+        setTimeRemaining((prevTimeRemaining) => prevTimeRemaining - 1);
+      }, 1000);
+
+      // Set the timer to show results after the time limit
+      const timerId = setTimeout(() => {
+        getCorrectAnswer();
+      }, currentQuestion.time * 1000);
+
+      setTimer(timerId);
+
+      // Clear the countdown and result timers when the component is unmounted or a new question is fetched
+      return () => {
+        clearInterval(countdownTimer);
+        clearTimeout(timerId);
+      };
+    }
+  }, [gameStarted, currentQuestion]);
+
+
+  // API set
+
+  // Join session
   const joinSession = async () => {
-    // Join session API call
+
     try {
       const joinResponse = await api.post(`/play/join/${sessionId}`,
         { 'name': playerName }
@@ -49,9 +114,34 @@ const PlayerGame = () => {
     }
   };
 
+  // Fetch question if there is a new question
+  const fetchQuestion = async () => {
+
+    console.log('Fetching question');
+    try {
+      const questionResponse = await api.get(`/play/${playerId}/question`, {
+        headers: {
+          'Content-type': 'application/json',
+          playerid: `${playerId}`,
+        },
+      })
+      if (questionResponse.status === 200) {
+        if (!currentQuestion || (currentQuestion.id !== questionResponse.data.question.id)) {
+          setSubmitted(false);
+          setShowResults(false);
+          setCurrentQuestion(questionResponse.data.question);
+        }
+      }
+      else {
+        alert('Error fetching question');
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   // Check if the game has started
   const fetchGameStatus = async () => {
-    // Fetch game status API call
     console.log('Fetching game status');
     try {
       const statusResponse = await api.get(`/play/${playerId}/status`)
@@ -69,77 +159,69 @@ const PlayerGame = () => {
     }
   };
 
-  // Hook to check if the game has started every 2 seconds
-  useEffect(() => {
-    if (!gameStarted && hasJoined) {
-      const statusInterval = setInterval(() => {
-        fetchGameStatus();
-      }, 1000); // Call fetchGameStatus every 2 seconds
-
-      return () => {
-        clearInterval(statusInterval); // Clear the interval when the component is unmounted or the game has started
-      };
-    }
-  }, [gameStarted, hasJoined]);
-
-  const fetchQuestion = async () => {
-    // Fetch question API call
-    console.log('Fetching question');
+  // Get the correct answer for the current question
+  const getCorrectAnswer = async () => {
+    console.log('Fetching answer');
     try {
-      const questionResponse = await api.get(`/play/${playerId}/question`, {
-        headers: {
-          'Content-type': 'application/json',
-          playerid: `${playerId}`,
-        },
-      })
-      if (questionResponse.status === 200) {
-        setCurrentQuestion(questionResponse.data.question);
+      const answersResponse = await api.get(`/play/${playerId}/answer`)
+      if (answersResponse.status === 200) {
+        setAnswers(answersResponse.data.answerIds);
+        setShowResults(true);
       }
       else {
-        alert('Error fetching question');
+        alert('Error fetching answers');
       }
-    } catch (error) {
+    }
+    catch (error) {
       console.log(error);
     }
   };
 
-  const submitAnswer = async (answer) => {
-    // Submit answer API call
-    console.log('Submitting answer', answer);
+  // Submit answer
+  const submitAnswer = async () => {
+    try {
+      const submitResponse = await api.put(`/play/${playerId}/answer`,
+        { 'answerIds': selectedAnswers }
+        , {
+          headers: {
+            'Content-type': 'application/json',
+          },
+        }
+      )
+      if (submitResponse.status === 200) {
+        setSubmitted(true);
+        setSelectedAnswers([]);
+      }
+      else {
+        alert('Error submitting answer');
+      }
+    }
+    catch (error) {
+      console.log(error);
+    }
+    console.log('Submitting answer', selectedAnswers);
   };
 
-  // Hook to fetch a question when the game starts or when the current question is answered or timed out
-  useEffect(() => {
-    if (gameStarted && currentQuestion) {
-      // Set the initial time remaining
-      setTimeRemaining(currentQuestion.time);
+  // Handle radio button change
+  const handleRadioChange = (event) => {
+    const value = parseInt(event.target.value);
+    setSelectedAnswers([value]);
+  };
 
-      // Update the time remaining every second
-      const countdownTimer = setInterval(() => {
-        setTimeRemaining((prevTimeRemaining) => prevTimeRemaining - 1);
-      }, 1000);
-
-      // Set the timer to show results after the time limit
-      const timerId = setTimeout(() => {
-        setShowResults(true);
-      }, currentQuestion.time * 1000);
-
-      setTimer(timerId);
-
-      // Clear the countdown and result timers when the component is unmounted or a new question is fetched
-      return () => {
-        clearInterval(countdownTimer);
-        clearTimeout(timerId);
-      };
+  // Handle checkbox change
+  const handleCheckboxChange = (event) => {
+    const value = parseInt(event.target.value);
+    if (event.target.checked) {
+      setSelectedAnswers((prev) => [...prev, value]);
+    } else {
+      setSelectedAnswers((prev) => prev.filter((answer) => answer !== value));
     }
-  }, [gameStarted, timer]);
+  };
 
-  useEffect(() => {
-    if (gameStarted) {
-      fetchQuestion();
-    }
-  }, [gameStarted, showResults]);
 
+  // Render page
+
+  // Join session page
   if (!hasJoined) {
     return (
       <Container>
@@ -171,6 +253,7 @@ const PlayerGame = () => {
     );
   }
 
+  // Waiting for game to start page
   if (!currentQuestion) {
     return (
       <Container>
@@ -183,56 +266,116 @@ const PlayerGame = () => {
     );
   }
 
+  // Game page
   return (
     <Container>
       <Box sx={{ my: 4 }}>
-        <Typography variant="h4" component="h1">
-          {currentQuestion.text}
-        </Typography>
-        {currentQuestion.mediaUrl && (<Box sx={{ my: 2 }}>
-          <img
-            src={currentQuestion.mediaUrl}
-            alt="question"
-            style={{ maxWidth: '100%' }}
-          />
-        </Box>
-        )}
-        <Box sx={{ mt: 2 }}>
-          <Typography variant="h6" component="h2">
-            Time remaining: {timeRemaining} seconds
+        <Paper elevation={3} sx={{ p: 3, borderRadius: 2 }}>
+          <Typography variant="h4" component="h1" align="center" gutterBottom>
+            {currentQuestion ? currentQuestion.text : 'Waiting for question'}
           </Typography>
-        </Box>
-        {showResults ? (
+          {currentQuestion && currentQuestion.mediaUrl && (
+            <Box sx={{ my: 2, textAlign: 'center' }}>
+              {questionData.mediaType === 'video' ? (
+                <video src={currentQuestion.mediaUrl}
+                  alt="question"
+                  style={{ maxWidth: '100%', maxHeight: 300 }} />
+              ) : (
+                <img src={currentQuestion.mediaUrl}
+                  alt="question"
+                  style={{ maxWidth: '100%', maxHeight: 300 }} />
+              )}
+            </Box>
+          )}
           <Box sx={{ mt: 2 }}>
-            {/* Render results here */}
-            <Typography variant="h5" component="h2">
-              Results
+            <Typography variant="h6" component="h2" align="center">
+              {!showResults
+                ? `Time remaining: ${timeRemaining} seconds`
+                : `Time's up`}
             </Typography>
           </Box>
-        ) : (
+
           <Box sx={{ mt: 2 }}>
-            {currentQuestion.answers.map((option, id) => (
-              <Box key={id} sx={{ mb: 1 }}>
+            <LinearProgress
+              variant="determinate"
+              value={100 - (timeRemaining / currentQuestion?.time) * 100}
+            />
+          </Box>
+          {showResults ? (
+            <Box sx={{ mt: 2 }}>
+              <Typography variant="h5" component="h2">
+                Correct answers:
+              </Typography>
+              <Box sx={{ mt: 1 }}>
+                {currentQuestion.answers.map((option, id) => (
+                  <Box
+                    key={id}
+                    sx={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      mb: 1,
+                      fontWeight: answers.includes(id) ? 'bold' : 'normal',
+                    }}
+                  >
+                    {answers.includes(id) ? (
+                      <CheckCircleIcon sx={{ color: green[500], marginRight: 1 }} />
+                    ) : (
+                      <ErrorIcon sx={{ color: red[500], marginRight: 1 }} />
+                    )}
+                    <Typography variant="h6" component="h3">
+                      {option.text}
+                    </Typography>
+                  </Box>
+                ))}
+              </Box>
+            </Box>
+          ) : (
+            <Box sx={{ mt: 2 }}>
+              <FormControl component="fieldset">
+                {currentQuestion.type === 'single' ? (
+                  <RadioGroup
+                    aria-label="quiz"
+                    value={selectedAnswers[0]?.toString() || ''}
+                    onChange={handleRadioChange}
+                  >
+                    {currentQuestion.answers.map((option, id) => (
+                      <FormControlLabel
+                        key={id}
+                        value={id.toString()}
+                        control={<Radio />}
+                        label={option.text}
+                      />
+                    ))}
+                  </RadioGroup>
+                ) : (
+                  currentQuestion.answers.map((option, id) => (
+                    <FormControlLabel
+                      key={id}
+                      control={
+                        <Checkbox
+                          checked={selectedAnswers.includes(id)}
+                          onChange={handleCheckboxChange}
+                          value={id.toString()}
+                        />
+                      }
+                      label={option.text}
+                    />
+                  ))
+                )}
+              </FormControl>
+              <Box sx={{ mt: 2 }}>
                 <Button
-                  variant={
-                    userAnswers.includes(id) ? 'contained' : 'outlined'
-                  }
+                  variant="contained"
                   color="primary"
-                  onClick={() => {
-                    if (!userAnswers.includes(id)) {
-                      setUserAnswers([...userAnswers, id]);
-                      submitAnswer(id);
-                    }
-                  }}
-                  fullWidth
+                  onClick={() => submitAnswer(selectedAnswers)}
+                  disabled={submitted || selectedAnswers.length === 0}
                 >
-                  {option.text}
+                  Submit Answer
                 </Button>
               </Box>
-            ))}
-          </Box>
-        )
-        }
+            </Box>
+          )}
+        </Paper>
       </Box>
     </Container>
   );

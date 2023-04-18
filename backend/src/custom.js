@@ -16,7 +16,8 @@ export const quizQuestionPublicReturn = question => {
     time: question.time,
     type: question.type,
     answers: newAnswers,
-    mediaUrl: question.mediaUrl,
+    mediaType: question.media[type],
+    mediaUrl: question.media[url],
   };
 };
 
@@ -25,7 +26,12 @@ export const quizQuestionPublicReturn = question => {
  the correct answers (minimum 1).
 */
 export const quizQuestionGetCorrectAnswers = question => {
-  const singleAnswersId = question.answers.filter(answer => answer.correct).map(answer => answer.id);
+  const singleAnswersId = question.answers.map((answer, index) => {
+    if (answer.correct) {
+      return index;
+    }
+  }).filter(item => item !== undefined);
+  console.log('singleAnswersId: ', singleAnswersId);
   return singleAnswersId; // For a single answer
 };
 
@@ -34,7 +40,12 @@ export const quizQuestionGetCorrectAnswers = question => {
  all of the answers, correct or incorrect.
 */
 export const quizQuestionGetAnswers = question => {
-  const multiAnswersId = question.answers.filter(answer => answer.correct).map(answer => answer.id);
+  const multiAnswersId = question.answers.map((answer, index) => {
+    if (answer.correct) {
+      return index;
+    }
+  }).filter(item => item !== undefined);
+  console.log('multiAnswersId: ', multiAnswersId);
   return multiAnswersId; // For a single answer
 };
 
