@@ -4,12 +4,17 @@ import { AppContext } from '../../App'
 import { useParams, Link } from 'react-router-dom'
 // import { Chart } from 'chart.js'
 import { Bar, Line } from 'react-chartjs-2'
+import {
+  Button,
+  Typography,
+} from '@mui/material';
 
 const AdminResult = () => {
   const { token } = useContext(AppContext)
   const { gameId, sessionId } = useParams()
   const [gameStatus, setGameStatus] = useState(null)
   const [results, setResults] = useState(null)
+  const [showCalculationDetails, setShowCalculationDetails] = useState(false);
   const defaultPlayer = {
     name: 'Default Player',
     answers: [],
@@ -107,6 +112,23 @@ const AdminResult = () => {
     )
   }
 
+  // Calculate the score for each question
+  function calculateScores(results, questions) {
+    return results.map((result, index) => {
+      const question = questions[index];
+      const timeLimit = question.time;
+      const timeSpent = (new Date(result.answeredAt) - new Date(result.questionStartedAt)) / 1000;
+
+      if (result.correct) {
+        const timeRatio = 1 + (timeLimit - timeSpent) / timeLimit;
+        const score = Math.round(question.points * Math.min(2, timeRatio));
+        return score;
+      } else {
+        return 0;
+      }
+    });
+  }
+
   const renderResults = () => {
     if (!results) {
       return <div>Loading results...</div>
@@ -161,12 +183,19 @@ const AdminResult = () => {
     }
 
     // Top 5 users and their scores
-    const topUsers = results.slice(0, 5).map((player, index) => (
-  <tr key={index}>
-    <td>{player.name}</td>
-    <td>{player.answers.filter((answer) => answer.correct).length}</td>
-  </tr>
-    ))
+
+    // Scale the scores
+    const topUsers = results.slice(0, 5).map((player, index) => {
+      const scores = calculateScores(player.answers, gameStatus.results.questions);
+      const totalScore = scores.reduce((acc, cur) => acc + cur, 0);
+      return (
+        <tr key={index}>
+          <td>{player.name}</td>
+          <td>{totalScore}</td>
+        </tr>
+      );
+    });
+
 
     // Chart: Percentage of people (Y axis) got certain questions (X axis) correct
     const questionsCorrectData = {
@@ -199,6 +228,20 @@ const AdminResult = () => {
     return (
       <>
         <h2>Game Results</h2>
+        <Button
+          size="small"
+          variant="outlined"
+          onClick={() => setShowCalculationDetails(!showCalculationDetails)}
+        >
+          {showCalculationDetails ? "Hide Details" : "Show Details"}
+        </Button>
+        {showCalculationDetails && (
+          <Typography variant="body1" component="span">
+            {" "}
+            (The total score is calculated by sun of each question.
+            The score for each question is calculated by scale up(1x to 2x) the basic score accoding to the time spent that player answered the question, and then round to integer.)
+          </Typography>
+        )}
         <h3>Top 5 Users</h3>
         <table>
           <thead>
@@ -222,14 +265,14 @@ const AdminResult = () => {
     <div>
       {gameStatus.results.active
         ? (
-        <>
-          <button onClick={advanceToNextQuestion}>Next Question</button>
-          <Link to={'/Dashboard'}> Stop Game </Link>
-        </>
-          )
+          <>
+            <button onClick={advanceToNextQuestion}>Next Question</button>
+            <Link to={'/Dashboard'}> Stop Game </Link>
+          </>
+        )
         : (
-            renderResults()
-          )}
+          renderResults()
+        )}
     </div>
   )
 }
