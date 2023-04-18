@@ -23,7 +23,7 @@ const startGame = async (gameId, token, setCopyLink, setSessionId, setShowModal,
     });
 
     const ActiveSessionId = gameResponse.data.active;
-    const newCopyLink = `${window.location.origin}/player/game/${gameId}/session/${ActiveSessionId}`;
+    const newCopyLink = `${window.location.origin}/player/game/session/${ActiveSessionId}`;
     setCopyLink(newCopyLink);
     setSessionId(ActiveSessionId);
     setShowModal(true);
