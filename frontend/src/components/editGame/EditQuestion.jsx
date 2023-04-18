@@ -295,13 +295,34 @@ const EditQuestion = () => {
               }
             />
           </Box>
+          {/* Media type */}
+          <Box mt={2}>
+            <FormControl fullWidth variant="outlined">
+              <InputLabel id="mediaType-label">Media Type</InputLabel>
+              <Select
+                labelId="mediaType-label"
+                id="mediaType"
+                value={questionData.media.type || ''}
+                onChange={(e) =>
+                  setQuestionData({
+                    ...questionData,
+                    media: { ...questionData.media, type: e.target.value },
+                  })
+                }
+                label="Media Type"
+              >
+                <MenuItem value="image">Image</MenuItem>
+                <MenuItem value="video">Video</MenuItem>
+              </Select>
+            </FormControl>
+          </Box>
           {/* Media */}
           <Box mt={2}>
             <TextField
-              label="Media (YouTube URL or Photo)"
+              label={`Media (${questionData.media.type === 'video' ? 'video URL' : 'Image URL'})`}
               variant="outlined"
               fullWidth
-              value={questionData.media ? questionData.media.url : ''}
+              value={questionData.media.url || ''}
               onChange={(e) =>
                 setQuestionData({
                   ...questionData,
