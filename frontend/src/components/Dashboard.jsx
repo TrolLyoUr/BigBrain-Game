@@ -21,7 +21,7 @@ import {
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
-// import PlayArrowIcon from '@mui/icons-material/PlayArrow';
+import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import LinkIcon from '@mui/icons-material/Link'
 import StopIcon from '@mui/icons-material/Stop';
 // import FileCopyIcon from '@mui/icons-material/FileCopy';
@@ -282,7 +282,7 @@ const Dashboard = () => {
                           )
                         }
                       >
-                        <LinkIcon />
+                        <PlayArrowIcon />
                       </IconButton>
                     )}
                     {gameStatus[game.id] && (
@@ -301,15 +301,15 @@ const Dashboard = () => {
                         <StopIcon />
                       </IconButton>
                     )}
-                    {/* {gameStatus[game.id] && (
+                    {gameStatus[game.id] && (
                       <IconButton
                         aria-label="Admin"
                         component={RouterLink}
-                        to={`/admin/game/${game.id}/session/${sessionId}`}
+                        to={`/admin/result/game/${game.id}/session/${sessionId}`}
                       >
-                        <PlayArrowIcon />
+                        <LinkIcon />
                       </IconButton>
-                    )} */}
+                    )}
                   </CardActions>
                 </Card>
               </Grid>
