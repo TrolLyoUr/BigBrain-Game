@@ -1,31 +1,26 @@
+// App.js
 import React, {
   createContext,
-  // useContext,
   useEffect,
   useState
-} from 'react'
+} from 'react';
 import {
   createBrowserRouter,
   Outlet,
   Link,
-  // useNavigate,
   RouterProvider,
-} from 'react-router-dom'
-// import api from './api'
+} from 'react-router-dom';
 
-import SignIn from './components/SignIn'
-import SignUp from './components/SignUp'
-import Dashboard from './components/Dashboard'
-// editGame
-import EditBigBrainGame from './components/editGame/EditBigBrainGame'
-import EditQuestion from './components/editGame/EditQuestion'
-// others
-import Logout from './components/others/Logout'
-// Admin
-import AdminResult from './components/admin/AdminResult'
-// player
-import PlayerGame from './components/player/PlayerGame'
-import PlayerGameNoid from './components/player/playerGameNoid'
+import SignIn from './components/SignIn';
+import SignUp from './components/SignUp';
+import Dashboard from './components/Dashboard';
+import EditBigBrainGame from './components/editGame/EditBigBrainGame';
+import EditQuestion from './components/editGame/EditQuestion';
+import Logout from './components/others/Logout';
+import AdminResult from './components/admin/AdminResult';
+import PlayerGame from './components/player/PlayerGame';
+import PlayerGameNoid from './components/player/playerGameNoid';
+import BackToDashboard from './components/others/BackToDashboard';
 
 export const AppContext = createContext()
 
@@ -120,10 +115,13 @@ function DashboardLayout() {
         <span>
           <Logout />
         </span>
+        <span>
+          <BackToDashboard />
+        </span>
       </nav>
       <Outlet />
     </>
-  )
+  );
 }
 
 function PlayerLayout() {
