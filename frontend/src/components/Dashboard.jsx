@@ -207,6 +207,7 @@ const Dashboard = () => {
     } catch (error) {
       console.log(error);
     }
+    fetchGamesList();
   }
 
   const validateCsvData = (data) => {

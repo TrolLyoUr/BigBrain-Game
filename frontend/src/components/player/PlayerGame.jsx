@@ -21,6 +21,8 @@ import ErrorIcon from '@mui/icons-material/Error';
 import { green, red } from '@mui/material/colors';
 import WaitingForGame from './Lobby';
 import useStyles from './GameStyle';
+import YouTube from 'react-youtube';
+
 
 
 const PlayerGame = () => {
@@ -263,7 +265,13 @@ const PlayerGame = () => {
   // Calculate the score for each question
   function calculateScores(results, questions) {
     return results.map((result, index) => {
+      console.log('qs', questions);
+      if (questions.length - 1 < index) {
+        return 0;
+      }
       const question = questions[index];
+      console.log('q', question);
+      console.log('qt', question.time);
       const timeLimit = question.time;
       const timeSpent = (new Date(result.answeredAt) - new Date(result.questionStartedAt)) / 1000;
 
@@ -275,6 +283,18 @@ const PlayerGame = () => {
         return 0;
       }
     });
+  }
+
+  // Extract the video id from the YouTube URL
+  function extractVideoIdFromUrl(url) {
+    const regExp = /^.*(youtu\.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+    const match = url.match(regExp);
+    if (match && match[2].length === 11) {
+      return match[2];
+    } else {
+      console.error('Invalid YouTube URL');
+      return null;
+    }
   }
 
 
@@ -313,29 +333,31 @@ const PlayerGame = () => {
           </Box>
           <Box sx={{ mt: 2 }}>
             {results.map((result, index) => {
-              const question = questions[index];
-              const isCorrect = result.correct;
-              const playerScore = scores[index];
-              return (
-                <Box key={index} sx={{ mb: 3 }}>
-                  <Typography variant="h5" component="h2">
-                    Question {index + 1}: {question.text}
-                  </Typography>
-                  <Typography variant="h6" component="h3">
-                    Basic score: {question.points}
-                  </Typography>
-                  <Typography variant="h6" component="h3">
-                    Your score: {playerScore}
-                  </Typography>
-                  <Typography
-                    variant="h6"
-                    component="h3"
-                    color={isCorrect ? green[500] : red[500]}
-                  >
-                    {isCorrect ? 'Correct' : 'Incorrect'}
-                  </Typography>
-                </Box>
-              );
+              if (questions.length - 1 >= index) {
+                const question = questions[index];
+                const isCorrect = result.correct;
+                const playerScore = scores[index];
+                return (
+                  <Box key={index} sx={{ mb: 3 }}>
+                    <Typography variant="h5" component="h2">
+                      Question {index + 1}: {question.text}
+                    </Typography>
+                    <Typography variant="h6" component="h3">
+                      Basic score: {question.points}
+                    </Typography>
+                    <Typography variant="h6" component="h3">
+                      Your score: {playerScore}
+                    </Typography>
+                    <Typography
+                      variant="h6"
+                      component="h3"
+                      color={isCorrect ? green[500] : red[500]}
+                    >
+                      {isCorrect ? 'Correct' : 'Incorrect'}
+                    </Typography>
+                  </Box>
+                );
+              }
             })}
           </Box>
         </Box>
@@ -388,9 +410,6 @@ const PlayerGame = () => {
 
   // Game results page
   if (gameEnded) {
-    console.log(questions)
-    console.log(results)
-    console.log(loadingResults)
     if (loadingResults) {
       return (
         <Container>
@@ -421,7 +440,7 @@ const PlayerGame = () => {
           {currentQuestion && currentQuestion.mediaUrl && (
             <Box sx={{ my: 2, textAlign: 'center' }}>
               {currentQuestion.mediaType === 'video' ? (
-                <video src={currentQuestion.mediaUrl}
+                <YouTube videoId={extractVideoIdFromUrl(currentQuestion.mediaUrl)}
                   alt="question"
                   style={{ maxWidth: '100%', maxHeight: 300 }} />
               ) : (

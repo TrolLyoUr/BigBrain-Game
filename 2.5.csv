@@ -1,3 +1,3 @@
 type,question,time,points,media_type,media_url,answer1_text,answer1_correct,answer2_text,answer2_correct,answer3_text,answer3_correct,answer4_text,answer4_correct,answer5_text,answer5_correct,answer6_text,answer6_correct
-single,"What is the capital of France?",10,100,video,https://www.youtube.com/watch?v=example_video,Paris,true,London,false,Berlin,false,New York,false,,,
-multiple,"Select the prime numbers.",15,200,image,https://example.com/prime_numbers_image.png,2,true,3,true,4,false,5,true,7,true,9,false
+single,"What is the capital of France?",10,100,video,https://www.youtube.com/watch?v=w9-ZmexMjfM,Paris,true,London,false,Berlin,false,New York,false,,,
+multiple,"Select the prime numbers.",15,200,image,https://media.sproutsocial.com/uploads/2017/02/10x-featured-social-media-image-size.png,2,true,3,true,4,false,5,true,7,true,9,false
