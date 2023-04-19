@@ -24,7 +24,6 @@ import useStyles from './GameStyle';
 import YouTube from 'react-youtube';
 
 
-
 const PlayerGame = () => {
   const { sessionId } = useParams();
   const [playerName, setPlayerName] = useState('');
@@ -101,14 +100,13 @@ const PlayerGame = () => {
     }
   }, [gameStarted, currentQuestionId, gameEnded]);
 
-
   // API set
 
   // Join session
   const joinSession = async () => {
     try {
       const joinResponse = await api.post(`/play/join/${sessionId}`,
-        { 'name': playerName }
+        { name: playerName }
         , {
           headers: {
             'Content-type': 'application/json',
@@ -118,8 +116,7 @@ const PlayerGame = () => {
       if (joinResponse.status === 200) {
         setPlayerId(joinResponse.data.playerId);
         setHasJoined(true);
-      }
-      else {
+      } else {
         alert('Error joining session');
       }
     } catch (error) {
@@ -151,8 +148,7 @@ const PlayerGame = () => {
           setCurrentQuestion(questionResponse.data.question);
           setCurrentQuestionId(questionResponse.data.question.id);
         }
-      }
-      else {
+      } else {
         alert('Error fetching question');
       }
     } catch (error) {
@@ -169,8 +165,7 @@ const PlayerGame = () => {
         if (statusResponse.data.started && !gameStarted) {
           setGameStarted(true);
         }
-      }
-      else {
+      } else {
         alert('Error fetching game status');
       }
     }
@@ -191,13 +186,10 @@ const PlayerGame = () => {
       if (answersResponse.status === 200) {
         setAnswers(answersResponse.data.answerIds);
         setShowResults(true);
-      }
-      else {
+      } else {
         alert('Error fetching answers');
       }
-
-    }
-    catch (error) {
+    } catch (error) {
       console.log(error);
     }
   };
@@ -206,7 +198,7 @@ const PlayerGame = () => {
   const submitAnswer = async () => {
     try {
       const submitResponse = await api.put(`/play/${playerId}/answer`,
-        { 'answerIds': selectedAnswers }
+        { answerIds: selectedAnswers }
         , {
           headers: {
             'Content-type': 'application/json',
@@ -216,12 +208,10 @@ const PlayerGame = () => {
       if (submitResponse.status === 200) {
         setSubmitted(true);
         setSelectedAnswers([]);
-      }
-      else {
+      } else {
         alert('Error submitting answer');
       }
-    }
-    catch (error) {
+    } catch (error) {
       console.log(error);
     }
     console.log('Submitting answer', selectedAnswers);
@@ -243,7 +233,6 @@ const PlayerGame = () => {
     setLoadingResults(false);
   };
 
-
   // Fuctions
 
   // Handle radio button change
@@ -263,7 +252,7 @@ const PlayerGame = () => {
   };
 
   // Calculate the score for each question
-  function calculateScores(results, questions) {
+  function calculateScores (results, questions) {
     return results.map((result, index) => {
       console.log('qs', questions);
       if (questions.length - 1 < index) {
@@ -320,11 +309,11 @@ const PlayerGame = () => {
                 variant="outlined"
                 onClick={() => setShowCalculationDetails(!showCalculationDetails)}
               >
-                {showCalculationDetails ? "Hide Details" : "Show Details"}
+                {showCalculationDetails ? 'Hide Details' : 'Show Details'}
               </Button>
               {showCalculationDetails && (
                 <Typography variant="body1" component="span">
-                  {" "}
+                  {' '}
                   (The total score is calculated by sun of each question.
                   The score for each question is calculated by scale up(1x to 2x) the basic score accoding to the time spent that player answered the question, and then round to integer.)
                 </Typography>
@@ -364,8 +353,6 @@ const PlayerGame = () => {
       </Container>
     );
   };
-
-
 
   // Render page
 
@@ -418,8 +405,7 @@ const PlayerGame = () => {
           </Box>
         </Container>
       );
-    }
-    else {
+    } else {
       return (
         <GameResults
           results={results}
@@ -439,22 +425,29 @@ const PlayerGame = () => {
           </Typography>
           {currentQuestion && currentQuestion.mediaUrl && (
             <Box sx={{ my: 2, textAlign: 'center' }}>
+<<<<<<< HEAD
               {currentQuestion.mediaType === 'video' ? (
                 <YouTube videoId={extractVideoIdFromUrl(currentQuestion.mediaUrl)}
+=======
+              {currentQuestion.mediaType === 'video'
+                ? (
+                <video src={currentQuestion.mediaUrl}
+>>>>>>> f2ff950 (- testing v)
                   alt="question"
                   style={{ maxWidth: '100%', maxHeight: 300 }} />
-              ) : (
+                  )
+                : (
                 <img src={currentQuestion.mediaUrl}
                   alt="question"
                   style={{ maxWidth: '100%', maxHeight: 300 }} />
-              )}
+                  )}
             </Box>
           )}
           <Box sx={{ mt: 2 }}>
             <Typography variant="h6" component="h2" align="center">
               {!showResults
                 ? `Time remaining: ${timeRemaining} seconds`
-                : `Time's up`}
+                : 'Time\'s up'}
             </Typography>
           </Box>
           <Box>
@@ -464,7 +457,8 @@ const PlayerGame = () => {
               className={classes.timerProgress}
             />
           </Box>
-          {showResults ? (
+          {showResults
+            ? (
             <Box sx={{ mt: 2 }}>
               <Typography variant="h5" component="h2">
                 Correct answers:
@@ -480,11 +474,13 @@ const PlayerGame = () => {
                       fontWeight: answers.includes(id) ? 'bold' : 'normal',
                     }}
                   >
-                    {answers.includes(id) ? (
+                    {answers.includes(id)
+                      ? (
                       <CheckCircleIcon sx={{ color: green[500], marginRight: 1 }} />
-                    ) : (
+                        )
+                      : (
                       <ErrorIcon sx={{ color: red[500], marginRight: 1 }} />
-                    )}
+                        )}
                     <Typography variant="h6" component="h3">
                       {option.text}
                     </Typography>
@@ -495,7 +491,8 @@ const PlayerGame = () => {
           ) : (
             <Box>
               <FormControl component="fieldset">
-                {currentQuestion.type === 'single' ? (
+                {currentQuestion.type === 'single'
+                  ? (
                   <RadioGroup
                     aria-label="quiz"
                     value={selectedAnswers[0]?.toString() || ''}
@@ -510,8 +507,9 @@ const PlayerGame = () => {
                       />
                     ))}
                   </RadioGroup>
-                ) : (
-                  currentQuestion.answers.map((option, id) => (
+                    )
+                  : (
+                      currentQuestion.answers.map((option, id) => (
                     <FormControlLabel
                       key={id}
                       control={
@@ -523,8 +521,8 @@ const PlayerGame = () => {
                       }
                       label={option.text}
                     />
-                  ))
-                )}
+                      ))
+                    )}
               </FormControl>
               <Box>
                 <Button
@@ -538,7 +536,7 @@ const PlayerGame = () => {
                 </Button>
               </Box>
             </Box>
-          )}
+              )}
         </Paper>
       </Box>
     </Container>
