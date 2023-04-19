@@ -252,7 +252,7 @@ const PlayerGame = () => {
   };
 
   // Calculate the score for each question
-  function calculateScores (results, questions) {
+  function calculateScores(results, questions) {
     return results.map((result, index) => {
       console.log('qs', questions);
       if (questions.length - 1 < index) {
@@ -425,22 +425,16 @@ const PlayerGame = () => {
           </Typography>
           {currentQuestion && currentQuestion.mediaUrl && (
             <Box sx={{ my: 2, textAlign: 'center' }}>
-<<<<<<< HEAD
               {currentQuestion.mediaType === 'video' ? (
                 <YouTube videoId={extractVideoIdFromUrl(currentQuestion.mediaUrl)}
-=======
-              {currentQuestion.mediaType === 'video'
-                ? (
-                <video src={currentQuestion.mediaUrl}
->>>>>>> f2ff950 (- testing v)
                   alt="question"
                   style={{ maxWidth: '100%', maxHeight: 300 }} />
-                  )
+              )
                 : (
-                <img src={currentQuestion.mediaUrl}
-                  alt="question"
-                  style={{ maxWidth: '100%', maxHeight: 300 }} />
-                  )}
+                  <img src={currentQuestion.mediaUrl}
+                    alt="question"
+                    style={{ maxWidth: '100%', maxHeight: 300 }} />
+                )}
             </Box>
           )}
           <Box sx={{ mt: 2 }}>
@@ -459,84 +453,84 @@ const PlayerGame = () => {
           </Box>
           {showResults
             ? (
-            <Box sx={{ mt: 2 }}>
-              <Typography variant="h5" component="h2">
-                Correct answers:
-              </Typography>
-              <Box sx={{ mt: 1 }}>
-                {currentQuestion.answers.map((option, id) => (
-                  <Box
-                    key={id}
-                    sx={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      mb: 1,
-                      fontWeight: answers.includes(id) ? 'bold' : 'normal',
-                    }}
-                  >
-                    {answers.includes(id)
-                      ? (
-                      <CheckCircleIcon sx={{ color: green[500], marginRight: 1 }} />
-                        )
-                      : (
-                      <ErrorIcon sx={{ color: red[500], marginRight: 1 }} />
-                        )}
-                    <Typography variant="h6" component="h3">
-                      {option.text}
-                    </Typography>
-                  </Box>
-                ))}
-              </Box>
-            </Box>
-          ) : (
-            <Box>
-              <FormControl component="fieldset">
-                {currentQuestion.type === 'single'
-                  ? (
-                  <RadioGroup
-                    aria-label="quiz"
-                    value={selectedAnswers[0]?.toString() || ''}
-                    onChange={handleRadioChange}
-                  >
-                    {currentQuestion.answers.map((option, id) => (
-                      <FormControlLabel
-                        key={id}
-                        value={id.toString()}
-                        control={<Radio />}
-                        label={option.text}
-                      />
-                    ))}
-                  </RadioGroup>
-                    )
-                  : (
-                      currentQuestion.answers.map((option, id) => (
-                    <FormControlLabel
+              <Box sx={{ mt: 2 }}>
+                <Typography variant="h5" component="h2">
+                  Correct answers:
+                </Typography>
+                <Box sx={{ mt: 1 }}>
+                  {currentQuestion.answers.map((option, id) => (
+                    <Box
                       key={id}
-                      control={
-                        <Checkbox
-                          checked={selectedAnswers.includes(id)}
-                          onChange={handleCheckboxChange}
-                          value={id.toString()}
+                      sx={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        mb: 1,
+                        fontWeight: answers.includes(id) ? 'bold' : 'normal',
+                      }}
+                    >
+                      {answers.includes(id)
+                        ? (
+                          <CheckCircleIcon sx={{ color: green[500], marginRight: 1 }} />
+                        )
+                        : (
+                          <ErrorIcon sx={{ color: red[500], marginRight: 1 }} />
+                        )}
+                      <Typography variant="h6" component="h3">
+                        {option.text}
+                      </Typography>
+                    </Box>
+                  ))}
+                </Box>
+              </Box>
+            ) : (
+              <Box>
+                <FormControl component="fieldset">
+                  {currentQuestion.type === 'single'
+                    ? (
+                      <RadioGroup
+                        aria-label="quiz"
+                        value={selectedAnswers[0]?.toString() || ''}
+                        onChange={handleRadioChange}
+                      >
+                        {currentQuestion.answers.map((option, id) => (
+                          <FormControlLabel
+                            key={id}
+                            value={id.toString()}
+                            control={<Radio />}
+                            label={option.text}
+                          />
+                        ))}
+                      </RadioGroup>
+                    )
+                    : (
+                      currentQuestion.answers.map((option, id) => (
+                        <FormControlLabel
+                          key={id}
+                          control={
+                            <Checkbox
+                              checked={selectedAnswers.includes(id)}
+                              onChange={handleCheckboxChange}
+                              value={id.toString()}
+                            />
+                          }
+                          label={option.text}
                         />
-                      }
-                      label={option.text}
-                    />
                       ))
                     )}
-              </FormControl>
-              <Box>
-                <Button
-                  variant="contained"
-                  color="primary"
-                  onClick={() => submitAnswer(selectedAnswers)}
-                  disabled={submitted || selectedAnswers.length === 0}
-                  className={classes.answerButton}
-                >
-                  Submit Answer
-                </Button>
+                </FormControl>
+                <Box>
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={() => submitAnswer(selectedAnswers)}
+                    disabled={submitted || selectedAnswers.length === 0}
+                    className={classes.answerButton}
+                  >
+                    Submit Answer
+                  </Button>
+                </Box>
               </Box>
-            </Box>
-              )}
+            )}
         </Paper>
       </Box>
     </Container>
