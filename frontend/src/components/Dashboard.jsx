@@ -23,9 +23,15 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import StopIcon from '@mui/icons-material/Stop';
-import { startGame, stopGame } from './others/GameActions';
+import { startGame, stopGame, viewResults } from './others/GameActions';
 import CsvUploadModal from './others/CsvUploadModal';
 import AdminResultButton from './others/AdminResultButton';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemText from '@mui/material/ListItemText';
+import Collapse from '@mui/material/Collapse';
+import ExpandLess from '@mui/icons-material/ExpandLess';
+import ExpandMore from '@mui/icons-material/ExpandMore';
 
 const Dashboard = () => {
   const { token } = useContext(AppContext)
@@ -40,6 +46,8 @@ const Dashboard = () => {
   const [showCsvUploadModal, setShowCsvUploadModal] = useState(false);
   const [newGameId, setNewGameId] = useState(null);
   const [newGameName, setNewGameName] = useState('');
+  const [selectedSession, setSelectedSession] = useState(null);
+  const [openSessionList, setOpenSessionList] = useState({});
 
   const navigate = useNavigate()
 
@@ -270,8 +278,6 @@ const Dashboard = () => {
   };
 
 
-
-
   const handleFileError = (err) => {
     window.alert('Error reading the CSV file: ' + err.message);
   }
@@ -342,6 +348,13 @@ const Dashboard = () => {
         </DialogActions>
       </Dialog>
     );
+  };
+
+  const toggleSessionList = (gameId) => {
+    setOpenSessionList((prevState) => ({
+      ...prevState,
+      [gameId]: !prevState[gameId],
+    }));
   };
 
   return (
@@ -433,7 +446,22 @@ const Dashboard = () => {
                     {gameStatus[game.id] && (
                       <AdminResultButton gameId={game.id} sessionId={sessionId} />
                     )}
+                    <IconButton onClick={() => toggleSessionList(game.id)}>
+                      {openSessionList[game.id] ? <ExpandLess /> : <ExpandMore />}
+                    </IconButton>
                   </CardActions>
+                  <Collapse in={openSessionList[game.id]} timeout="auto" unmountOnExit>
+                    <List component="div" disablePadding>
+                      {game.oldSessions.map((session) => (
+                        <ListItem
+                          key={session}
+                          onClick={() => viewResults(game.id, session, navigate)}
+                        >
+                          <ListItemText primary={`Session ${session}`} />
+                        </ListItem>
+                      ))}
+                    </List>
+                  </Collapse>
                 </Card>
               </Grid>
             )

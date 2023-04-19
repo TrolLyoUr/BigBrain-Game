@@ -72,4 +72,19 @@ const stopGame = async (gameId, token, setGameStatus, sessionId, navigate) => {
   }));
 };
 
-export { startGame, stopGame };
+const viewResults = async (gameId, sessionId, navigate) => {
+  Swal.fire({
+    title: 'View Results?',
+    text: 'Would you like to view the results?',
+    icon: 'question',
+    showCancelButton: true,
+    confirmButtonText: 'Yes',
+    cancelButtonText: 'No',
+  }).then((result) => {
+    if (result.isConfirmed) {
+      navigate(`/admin/result/game/${gameId}/session/${sessionId}`);
+    }
+  });
+};
+
+export { startGame, stopGame, viewResults };
