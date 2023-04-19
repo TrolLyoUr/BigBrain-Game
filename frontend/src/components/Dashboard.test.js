@@ -105,7 +105,8 @@ describe('Dashboard', () => {
     await waitFor(() => {
       expect(mockApi).toHaveBeenCalledTimes(2)
     })
-    expect(screen.getByText(/test game/i)).toBeInTheDocument()
+    const foundElement = await screen.findByText(/Test Game/i)
+    expect(foundElement).toBeInTheDocument()
     expect(screen.getByText(/1 questions/i)).toBeInTheDocument()
     expect(screen.getByText(/total time: 10 seconds/i)).toBeInTheDocument()
     mockApi.mockRestore()

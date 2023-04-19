@@ -50,26 +50,51 @@ function SignUp ({ onSuccess }) {
     }
   }
 
-  return (
-    <>
-      <br />
-      <label>
-        Email:{' '}
-        <input value={email} onChange={(e) => setEmail(e.target.value)} />
-      </label>
-      <br />
-      <label>
-        Password:{' '}
-        <input value={password} onChange={(e) => setPassword(e.target.value)} />
-      </label>
-      <br />
-      <label>
-        Name: <input value={name} onChange={(e) => setName(e.target.value)} />
-      </label>
-      <br />
-      <button onClick={register}>Sign up</button>
-    </>
-  )
+ return (
+   <>
+     <form role="form">
+       <label htmlFor="email">
+         Email:{" "}
+         <input
+           id="email"
+           type="email"
+           value={email}
+           onChange={(e) => setEmail(e.target.value)}
+           aria-label="Email"
+           required
+         />
+       </label>
+       <br />
+       <label htmlFor="password">
+         Password:{" "}
+         <input
+           id="password"
+           type="password"
+           value={password}
+           onChange={(e) => setPassword(e.target.value)}
+           aria-label="Password"
+           required
+         />
+       </label>
+       <br />
+       <label htmlFor="name">
+         Name:{" "}
+         <input
+           id="name"
+           type="text"
+           value={name}
+           onChange={(e) => setName(e.target.value)}
+           aria-label="Name"
+           required
+         />
+       </label>
+       <br />
+       <button type="submit" onClick={register} aria-label="Sign up">
+         Sign up
+       </button>
+     </form>
+   </>
+ )
 }
 
 export default SignUp
