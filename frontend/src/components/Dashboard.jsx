@@ -26,6 +26,7 @@ import LinkIcon from '@mui/icons-material/Link'
 import StopIcon from '@mui/icons-material/Stop';
 // import FileCopyIcon from '@mui/icons-material/FileCopy';
 import { startGame, stopGame } from './others/GameActions';
+import CsvUploadModal from './others/CsvUploadModal'; // Add this import
 
 const Dashboard = () => {
   const { token } = useContext(AppContext)
@@ -36,6 +37,11 @@ const Dashboard = () => {
   const [copyLink, setCopyLink] = useState('')
   // const defaultThumbnailUrl = `${process.env.PUBLIC_URL}/assets/kahoot.png`
   const [gameStatus, setGameStatus] = useState({})
+  // State for upload csv file
+  const [showCsvUploadModal, setShowCsvUploadModal] = useState(false);
+  const [newGameId, setNewGameId] = useState(null);
+  const [newGameName, setNewGameName] = useState('');
+
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -52,7 +58,6 @@ const Dashboard = () => {
           Authorization: `Bearer ${token}`,
         },
       })
-      // console.log('res: ', response.data)
       // Check if the response data contains an array of quizzes
       if (Array.isArray(response.data.quizzes)) {
         // Create an array of promises to fetch the full data for each game
@@ -64,13 +69,11 @@ const Dashboard = () => {
             },
           })
 
-          // console.log(gameResponse.data)
           // Add the game ID from the original response data
           gameResponse.data.id = game.id
 
           // Check game status
           if (gameResponse.data.active) {
-            console.log('game is active')
             setGameStatus((prevGameStatus) => ({
               ...prevGameStatus,
               [game.id]: gameResponse.data.active,
@@ -81,7 +84,6 @@ const Dashboard = () => {
 
         // Wait for all promises to resolve and set the games list
         const gamesWithQuestions = await Promise.all(gamePromises)
-        console.log('dashboard: ', gamesWithQuestions)
         setGamesList(gamesWithQuestions)
       } else {
         console.error('Error: response data is not an array')
@@ -109,12 +111,12 @@ const Dashboard = () => {
   }
 
   const createGame = async () => {
-    const name = prompt('Enter a name for the new game:')
+    const name = prompt('Enter a name for the new game:');
     if (name === null) {
-      return
+      return;
     }
     try {
-      await api.post(
+      const response = await api.post(
         '/admin/quiz/new',
         { name },
         {
@@ -123,10 +125,13 @@ const Dashboard = () => {
             Authorization: `Bearer ${token}`,
           },
         }
-      )
+      );
       // ---
       // setGamesList([...gamesList, newGame.data])
-      fetchGamesList()
+      fetchGamesList();
+      setNewGameId(response.data.quizId); // Save the new game id
+      setNewGameName(name); // Save the new game name
+      setShowCsvUploadModal(true); // Show the CSV upload modal
     } catch (error) {
       if (error.response) {
         switch (error.response.status) {
@@ -152,6 +157,130 @@ const Dashboard = () => {
       }
     }
   }
+
+  const handleCsvUpload = async (gameId, data) => {
+    if (!data) return;
+    console.log('data: ', data);
+    const validatedData = validateCsvData(data);
+    if (!validatedData) {
+      window.alert('Invalid CSV data. Please check the file format and content.');
+      return;
+    }
+
+    // Store the questions data
+    const updatedQuestions = [];
+    data.forEach(async (row) => {
+      console.log('row: ', row);
+      const answersArray = Object.entries(row)
+        .filter(([key, value]) => key.startsWith("answer") && key.includes("_text") && value !== null)
+        .map(([key, value]) => ({
+          text: value,
+          correct: row[`${key.slice(0, -4)}correct`],
+        }));
+      console.log('answer: ', answersArray);
+      const updatedQuestion = {
+        id: Date.now() + Math.floor(Math.random() * 100000),
+        type: row.type,
+        text: row.question,
+        time: row.time,
+        points: row.points,
+        media: {
+          type: row.media_type,
+          url: row.media_url,
+        },
+        answers: answersArray,
+      }
+      updatedQuestions.push(updatedQuestion);
+    })
+
+    // Upload the CSV data to the server
+    try {
+      const gameData = { questions: updatedQuestions, name: newGameName, thumbnail: '' }
+
+      const uploadResponse = await api.put(`/admin/quiz/${gameId}`, gameData, {
+        headers: {
+          'Content-type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      window.alert('Quiz created successfully.');
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  const validateCsvData = (data) => {
+    const requiredFields = [
+      "type",
+      "question",
+      "time",
+      "points",
+      "media_type",
+      "media_url",
+    ];
+
+    const validQuestionTypes = ["single", "multiple"];
+    const validMediaTypes = ["video", "image", "none"];
+
+    for (let row of data) {
+      // Check if all required fields are present
+      for (let field of requiredFields) {
+        if (!row.hasOwnProperty(field)) {
+          return false;
+        }
+      }
+
+      // Validate question type
+      if (!validQuestionTypes.includes(row.type)) {
+        return false;
+      }
+
+      // Validate time and points
+      if (row.time <= 0 || row.points <= 0) {
+        return false;
+      }
+
+      // Validate media type
+      if (!validMediaTypes.includes(row.media_type)) {
+        return false;
+      }
+
+      // Validate answers
+      let hasCorrectAnswer = false;
+      for (let i = 1; i <= 6; i++) {
+        const answerText = row[`answer${i}_text`];
+        const answerCorrect = row[`answer${i}_correct`];
+
+        if (answerText && (answerCorrect === true || answerCorrect === false)) {
+          if (answerCorrect) {
+            hasCorrectAnswer = true;
+          }
+        } else if (answerText || answerCorrect) {
+          return false;
+        }
+      }
+
+      // Check if at least one correct answer is present
+      if (!hasCorrectAnswer) {
+        return false;
+      }
+    }
+
+    return true;
+  };
+
+
+
+
+  const handleFileError = (err) => {
+    window.alert('Error reading the CSV file: ' + err.message);
+  }
+
+  // Close the CSV upload modal
+  const handleCloseCsvUploadModal = () => {
+    setShowCsvUploadModal(false);
+    setNewGameId(null);
+  };
 
   const deleteGame = async (gameId) => {
     // ---
@@ -238,7 +367,6 @@ const Dashboard = () => {
                 (sum, question) => sum + question.time,
                 0
               ) || 0;
-            console.log('game: ', game)
 
             return (
               <Grid key={game.id} item xs={12} sm={6} md={4}>
@@ -323,6 +451,14 @@ const Dashboard = () => {
         sessionId={sessionId}
         copyLink={copyLink}
         copyToClipboard={copyToClipboard}
+      />
+      {/* Add the CsvUploadModal component */}
+      <CsvUploadModal
+        open={showCsvUploadModal}
+        gameId={newGameId}
+        onClose={handleCloseCsvUploadModal}
+        onUpload={handleCsvUpload}
+        onError={handleFileError}
       />
     </Container>
   );
