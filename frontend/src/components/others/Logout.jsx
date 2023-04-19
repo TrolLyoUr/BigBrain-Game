@@ -1,7 +1,9 @@
+// Logout.jsx
 import React, { useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../../api';
 import { AppContext } from '../../App';
+import { Button } from '@mui/material';
 
 const Logout = () => {
   const { token, setToken } = useContext(AppContext);
@@ -27,7 +29,11 @@ const Logout = () => {
     }
   };
 
-  return <button onClick={handleLogout}>Logout</button>;
+  return (
+    <Button color="inherit" onClick={handleLogout}>
+      Logout
+    </Button>
+  );
 };
 
 export default Logout;
