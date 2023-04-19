@@ -1,31 +1,33 @@
-import React, { useContext } from 'react'
-import { useNavigate } from 'react-router-dom'
-// import api from '../api'
-import { AppContext } from '../../App'
+import React, { useContext } from 'react';
+import { useNavigate } from 'react-router-dom';
+import api from '../../api';
+import { AppContext } from '../../App';
 
-export default function Logout () {
-  const { setToken } = useContext(AppContext)
-  const navigate = useNavigate()
-  // console.log(token)
+const Logout = () => {
+  const { token, setToken } = useContext(AppContext);
+  const navigate = useNavigate();
 
-  const logout = async () => {
-    // try {
-    //   await api.post('/admin/auth/logout', {
-    //     headers: {
-    //       'Content-type': 'application/json',
-    //       Authorization: `Bearer ${token}`,
-    //     },
-    //   })
-    //   //   setToken(null)
-    //   //   localStorage.removeItem('token')
-    //   navigate('/')
-    // } catch (error) {
-    //   // error handling code here
-    // }
-    setToken(null)
-    localStorage.removeItem('token')
-    navigate('/')
-  }
+  const handleLogout = async () => {
+    try {
+      await api.post(
+        '/admin/auth/logout',
+        {},
+        {
+          headers: {
+            'Content-type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      navigate('/');
+      setToken(null);
+      localStorage.removeItem('token');
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
-  return <button onClick={logout}>Logout</button>
-}
+  return <button onClick={handleLogout}>Logout</button>;
+};
+
+export default Logout;
