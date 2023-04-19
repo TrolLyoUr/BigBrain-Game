@@ -22,11 +22,10 @@ import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
-import LinkIcon from '@mui/icons-material/Link'
 import StopIcon from '@mui/icons-material/Stop';
-// import FileCopyIcon from '@mui/icons-material/FileCopy';
 import { startGame, stopGame } from './others/GameActions';
-import CsvUploadModal from './others/CsvUploadModal'; // Add this import
+import CsvUploadModal from './others/CsvUploadModal';
+import AdminResultButton from './others/AdminResultButton';
 
 const Dashboard = () => {
   const { token } = useContext(AppContext)
@@ -347,6 +346,7 @@ const Dashboard = () => {
 
   return (
     <Container>
+      {console.log('gamesList: ', gamesList)}
       <Box sx={{ my: 4 }}>
         <Typography variant="h4" component="h1">
           Dashboard
@@ -431,13 +431,7 @@ const Dashboard = () => {
                       </IconButton>
                     )}
                     {gameStatus[game.id] && (
-                      <IconButton
-                        aria-label="Admin"
-                        component={RouterLink}
-                        to={`/admin/result/game/${game.id}/session/${sessionId}`}
-                      >
-                        <LinkIcon />
-                      </IconButton>
+                      <AdminResultButton gameId={game.id} sessionId={sessionId} />
                     )}
                   </CardActions>
                 </Card>
