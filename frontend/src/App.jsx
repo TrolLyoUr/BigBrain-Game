@@ -71,10 +71,6 @@ function App () {
           path: '/edit/game/:gameId/question/:questionId',
           element: <EditQuestion />,
         },
-        // {
-        //   path: '/admin/game/:gameId/session/:sessionId',
-        //   element: <AdminGame />,
-        // },
         {
           path: '/admin/result/game/:gameId/session/:sessionId',
           element: <AdminResult />,

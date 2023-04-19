@@ -9,9 +9,9 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import { rest } from 'msw'
 import { setupServer } from 'msw/node'
 
-import SignIn from '../SignIn'
-import SignUp from '../SignUp'
-import Dashboard from '../Dashboard'
+import SignIn from './SignIn'
+import SignUp from './SignUp'
+import Dashboard from './Dashboard'
 
 const server = setupServer(
   rest.post('http://localhost:5005/admin/auth/login', (req, res, ctx) => {
