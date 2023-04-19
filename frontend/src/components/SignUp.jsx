@@ -53,12 +53,19 @@ function SignUp ({ onSuccess }) {
   return (
     <>
       <br />
-      Email: <input value={email} onChange={(e) => setEmail(e.target.value)} />
+      <label>
+        Email:{' '}
+        <input value={email} onChange={(e) => setEmail(e.target.value)} />
+      </label>
       <br />
-      Password:{' '}
-      <input value={password} onChange={(e) => setPassword(e.target.value)} />
+      <label>
+        Password:{' '}
+        <input value={password} onChange={(e) => setPassword(e.target.value)} />
+      </label>
       <br />
-      Name: <input value={name} onChange={(e) => setName(e.target.value)} />
+      <label>
+        Name: <input value={name} onChange={(e) => setName(e.target.value)} />
+      </label>
       <br />
       <button onClick={register}>Sign up</button>
     </>

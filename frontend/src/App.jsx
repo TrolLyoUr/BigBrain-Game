@@ -11,6 +11,7 @@ import {
   RouterProvider,
 } from 'react-router-dom';
 
+<<<<<<< HEAD
 import SignIn from './components/SignIn';
 import SignUp from './components/SignUp';
 import Dashboard from './components/Dashboard';
@@ -21,10 +22,25 @@ import AdminResult from './components/admin/AdminResult';
 import PlayerGame from './components/player/PlayerGame';
 import PlayerGameNoid from './components/player/playerGameNoid';
 import BackToDashboard from './components/others/BackToDashboard';
+=======
+import SignIn from './components/SignIn'
+import SignUp from './components/SignUp'
+import Dashboard from './components/Dashboard'
+// editGame
+import EditBigBrainGame from './components/editGame/EditBigBrainGame'
+import EditQuestion from './components/editGame/EditQuestion'
+// others
+import Logout from './components/others/Logout'
+// Admin
+import AdminResult from './components/admin/AdminResult'
+// player
+import PlayerGame from './components/player/PlayerGame'
+import PlayerGameNoid from './components/player/playerGameNoid'
+>>>>>>> f2ff950 (- testing v)
 
 export const AppContext = createContext()
 
-function App() {
+function App () {
   const [token, setToken] = useState(null)
 
   const manageTokenSet = (token) => {
@@ -55,10 +71,6 @@ function App() {
           path: '/edit/game/:gameId/question/:questionId',
           element: <EditQuestion />,
         },
-        // {
-        //   path: '/admin/game/:gameId/session/:sessionId',
-        //   element: <AdminGame />,
-        // },
         {
           path: '/admin/result/game/:gameId/session/:sessionId',
           element: <AdminResult />,
@@ -91,7 +103,7 @@ function App() {
   )
 }
 
-function NavLayout() {
+function NavLayout () {
   return (
     <>
       <nav>
@@ -108,7 +120,7 @@ function NavLayout() {
   )
 }
 
-function DashboardLayout() {
+function DashboardLayout () {
   return (
     <>
       <nav>
@@ -124,7 +136,7 @@ function DashboardLayout() {
   );
 }
 
-function PlayerLayout() {
+function PlayerLayout () {
   return (
     <>
       <nav>

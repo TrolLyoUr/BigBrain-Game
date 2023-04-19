@@ -24,6 +24,7 @@ function SignIn ({ onSuccess }) {
 
         // Success: lead to dashboard
         navigate('/dashboard')
+        console.log('token', token)
         onSuccess(token)
       } else {
         throw new Error(`An error occurred: ${response.statusText}`)
@@ -52,12 +53,21 @@ function SignIn ({ onSuccess }) {
   return (
     <>
       <br />
-      Email: <input value={email} onChange={(e) => setEmail(e.target.value)} />
+      <label htmlFor="email">Email:</label>
+      <input
+        id="email"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+      />
       <br />
-      Password:{' '}
-      <input value={password} onChange={(e) => setPassword(e.target.value)} />
+      <label htmlFor="password">Password:</label>
+      <input
+        id="password"
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+      />
       <br />
-      <button onClick={login}>Sign in</button>
+      <button onClick={login}>Login</button>
     </>
   )
 }
