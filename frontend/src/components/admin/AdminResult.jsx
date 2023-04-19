@@ -1,14 +1,13 @@
 import React, { useState, useEffect, useContext } from 'react'
 import api from '../../api'
 import { AppContext } from '../../App'
-import { useParams, Link } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 // import { Chart } from 'chart.js'
 import { Bar, Line } from 'react-chartjs-2'
 import {
   Button,
   Typography,
 } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
 
 const AdminResult = () => {
   const { token } = useContext(AppContext)
@@ -21,7 +20,7 @@ const AdminResult = () => {
     answers: [],
   }
 
-  const navigate = useNavigate()
+  // const navigate = useNavigate()
 
   useEffect(() => {
     // valid token check
@@ -117,7 +116,7 @@ const AdminResult = () => {
   }
 
   // Calculate the score for each question
-  function calculateScores(results, questions) {
+  function calculateScores (results, questions) {
     return results.map((result, index) => {
       const question = questions[index];
       const timeLimit = question.time;
@@ -200,7 +199,6 @@ const AdminResult = () => {
       );
     });
 
-
     // Chart: Percentage of people (Y axis) got certain questions (X axis) correct
     const questionsCorrectData = {
       labels: results.map((_, index) => `Question ${index + 1}`),
@@ -237,11 +235,11 @@ const AdminResult = () => {
           variant="outlined"
           onClick={() => setShowCalculationDetails(!showCalculationDetails)}
         >
-          {showCalculationDetails ? "Hide Details" : "Show Details"}
+          {showCalculationDetails ? 'Hide Details' : 'Show Details'}
         </Button>
         {showCalculationDetails && (
           <Typography variant="body1" component="span">
-            {" "}
+            {' '}
             (The total score is calculated by sun of each question.
             The score for each question is calculated by scale up(1x to 2x) the basic score accoding to the time spent that player answered the question, and then round to integer.)
           </Typography>
@@ -294,10 +292,10 @@ const AdminResult = () => {
             }
             }> Stop Game </Button>
           </>
-        )
+          )
         : (
-          renderResults()
-        )}
+            renderResults()
+          )}
     </div>
   )
 }

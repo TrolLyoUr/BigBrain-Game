@@ -23,7 +23,6 @@ import WaitingForGame from './Lobby';
 import useStyles from './GameStyle';
 import YouTube from 'react-youtube';
 
-
 const PlayerGame = () => {
   const { sessionId } = useParams();
   const [playerName, setPlayerName] = useState('');
@@ -44,17 +43,12 @@ const PlayerGame = () => {
   const [gameEnded, setGameEnded] = useState(false);
 
   const classes = useStyles();
-
-
-
-
+  console.log(timer);
   // Polling for game status and question
   useEffect(() => {
     if (hasJoined && !gameEnded) {
       const statusInterval = setInterval(() => {
-        if (!gameStarted)
-          fetchGameStatus();
-        else {
+        if (!gameStarted) { fetchGameStatus(); } else {
           fetchGameStatus();
           fetchQuestion();
         }
@@ -168,8 +162,7 @@ const PlayerGame = () => {
       } else {
         alert('Error fetching game status');
       }
-    }
-    catch (error) {
+    } catch (error) {
       if (gameStarted) {
         console.log('Game ended');
         setGameEnded(true);
@@ -252,7 +245,7 @@ const PlayerGame = () => {
   };
 
   // Calculate the score for each question
-  function calculateScores(results, questions) {
+  function calculateScores (results, questions) {
     return results.map((result, index) => {
       console.log('qs', questions);
       if (questions.length - 1 < index) {
@@ -275,17 +268,21 @@ const PlayerGame = () => {
   }
 
   // Extract the video id from the YouTube URL
-  function extractVideoIdFromUrl(url) {
-    const regExp = /^.*(youtu\.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
-    const match = url.match(regExp);
+  function extractVideoIdFromUrl (url) {
+    // eslint-disable-next-line no-useless-escape
+    // const regExp = new RegExp(
+    //   '^.*(?:youtu\\.be\\/|v\\/|u\\/\\w\\/|embed\\/|watch\\?v=|&v=)([^#&?]*).*'
+    // )
+    const regExp =
+      /^.*(?:youtu\.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*$/
+    const match = url.match(regExp)
     if (match && match[2].length === 11) {
-      return match[2];
+      return match[2]
     } else {
-      console.error('Invalid YouTube URL');
-      return null;
+      console.error('Invalid YouTube URL')
+      return null
     }
   }
-
 
   // Render functions
   const GameResults = ({ results, questions }) => {
@@ -307,15 +304,19 @@ const PlayerGame = () => {
               <Button
                 size="small"
                 variant="outlined"
-                onClick={() => setShowCalculationDetails(!showCalculationDetails)}
+                onClick={() =>
+                  setShowCalculationDetails(!showCalculationDetails)
+                }
               >
                 {showCalculationDetails ? 'Hide Details' : 'Show Details'}
               </Button>
               {showCalculationDetails && (
                 <Typography variant="body1" component="span">
                   {' '}
-                  (The total score is calculated by sun of each question.
-                  The score for each question is calculated by scale up(1x to 2x) the basic score accoding to the time spent that player answered the question, and then round to integer.)
+                  (The total score is calculated by sun of each question. The
+                  score for each question is calculated by scale up(1x to 2x)
+                  the basic score accoding to the time spent that player
+                  answered the question, and then round to integer.)
                 </Typography>
               )}
             </Typography>
@@ -323,9 +324,9 @@ const PlayerGame = () => {
           <Box sx={{ mt: 2 }}>
             {results.map((result, index) => {
               if (questions.length - 1 >= index) {
-                const question = questions[index];
-                const isCorrect = result.correct;
-                const playerScore = scores[index];
+                const question = questions[index]
+                const isCorrect = result.correct
+                const playerScore = scores[index]
                 return (
                   <Box key={index} sx={{ mb: 3 }}>
                     <Typography variant="h5" component="h2">
@@ -345,13 +346,15 @@ const PlayerGame = () => {
                       {isCorrect ? 'Correct' : 'Incorrect'}
                     </Typography>
                   </Box>
-                );
+                )
+              } else {
+                return null
               }
             })}
           </Box>
         </Box>
       </Container>
-    );
+    )
   };
 
   // Render page
@@ -425,16 +428,17 @@ const PlayerGame = () => {
           </Typography>
           {currentQuestion && currentQuestion.mediaUrl && (
             <Box sx={{ my: 2, textAlign: 'center' }}>
-              {currentQuestion.mediaType === 'video' ? (
+              {currentQuestion.mediaType === 'video'
+                ? (
                 <YouTube videoId={extractVideoIdFromUrl(currentQuestion.mediaUrl)}
                   alt="question"
                   style={{ maxWidth: '100%', maxHeight: 300 }} />
-              )
+                  )
                 : (
                   <img src={currentQuestion.mediaUrl}
                     alt="question"
                     style={{ maxWidth: '100%', maxHeight: 300 }} />
-                )}
+                  )}
             </Box>
           )}
           <Box sx={{ mt: 2 }}>
@@ -471,10 +475,10 @@ const PlayerGame = () => {
                       {answers.includes(id)
                         ? (
                           <CheckCircleIcon sx={{ color: green[500], marginRight: 1 }} />
-                        )
+                          )
                         : (
                           <ErrorIcon sx={{ color: red[500], marginRight: 1 }} />
-                        )}
+                          )}
                       <Typography variant="h6" component="h3">
                         {option.text}
                       </Typography>
@@ -482,7 +486,8 @@ const PlayerGame = () => {
                   ))}
                 </Box>
               </Box>
-            ) : (
+              )
+            : (
               <Box>
                 <FormControl component="fieldset">
                   {currentQuestion.type === 'single'
@@ -501,9 +506,9 @@ const PlayerGame = () => {
                           />
                         ))}
                       </RadioGroup>
-                    )
+                      )
                     : (
-                      currentQuestion.answers.map((option, id) => (
+                        currentQuestion.answers.map((option, id) => (
                         <FormControlLabel
                           key={id}
                           control={
@@ -515,8 +520,8 @@ const PlayerGame = () => {
                           }
                           label={option.text}
                         />
-                      ))
-                    )}
+                        ))
+                      )}
                 </FormControl>
                 <Box>
                   <Button
@@ -530,7 +535,7 @@ const PlayerGame = () => {
                   </Button>
                 </Box>
               </Box>
-            )}
+              )}
         </Paper>
       </Box>
     </Container>

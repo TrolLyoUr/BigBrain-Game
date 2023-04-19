@@ -7,17 +7,17 @@ import Button from '@mui/material/Button';
 import CSVReader from 'react-csv-reader';
 
 const CsvUploadModal = ({ open, gameId, onClose, onUpload, onError }) => {
-    const handleCsvUpload = (data) => {
-        onUpload(gameId, data);
-        onClose();
-    };
+  const handleCsvUpload = (data) => {
+    onUpload(gameId, data);
+    onClose();
+  };
 
-    const handleFileError = (err) => {
-        onError(err);
-        onClose();
-    };
+  const handleFileError = (err) => {
+    onError(err);
+    onClose();
+  };
 
-    return (
+  return (
         <Dialog open={open} onClose={onClose}>
             <DialogTitle>Upload a CSV file for the new game</DialogTitle>
             <DialogContent>
@@ -25,10 +25,10 @@ const CsvUploadModal = ({ open, gameId, onClose, onUpload, onError }) => {
                     onFileLoaded={handleCsvUpload}
                     onError={handleFileError}
                     parserOptions={{
-                        header: true,
-                        dynamicTyping: true,
-                        skipEmptyLines: true,
-                        transformHeader: (header) => header.trim().toLowerCase(),
+                      header: true,
+                      dynamicTyping: true,
+                      skipEmptyLines: true,
+                      transformHeader: (header) => header.trim().toLowerCase(),
                     }}
                 />
             </DialogContent>
@@ -38,7 +38,7 @@ const CsvUploadModal = ({ open, gameId, onClose, onUpload, onError }) => {
                 </Button>
             </DialogActions>
         </Dialog>
-    );
+  );
 };
 
 export default CsvUploadModal;

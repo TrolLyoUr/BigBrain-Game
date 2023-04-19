@@ -28,7 +28,7 @@ import BackToDashboard from './components/others/BackToDashboard';
 
 export const AppContext = createContext()
 
-function App() {
+function App () {
   const [token, setToken] = useState(null)
 
   const manageTokenSet = (token) => {
@@ -91,7 +91,7 @@ function App() {
   )
 }
 
-function NavLayout() {
+function NavLayout () {
   return (
     <>
       <nav>
@@ -108,7 +108,7 @@ function NavLayout() {
   )
 }
 
-function DashboardLayout() {
+function DashboardLayout () {
   return (
     <>
       <nav>
@@ -124,7 +124,7 @@ function DashboardLayout() {
   );
 }
 
-function PlayerLayout() {
+function PlayerLayout () {
   return (
     <>
       <nav>
