@@ -1,12 +1,19 @@
-import React from 'react'
-import { useNavigate } from 'react-router-dom'
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
+import {
+  Box,
+  Button,
+  Container,
+  TextField,
+  Typography,
+} from '@mui/material';
 
-function SignIn ({ onSuccess }) {
-  const [email, setEmail] = React.useState('')
-  const [password, setPassword] = React.useState('')
-  const navigate = useNavigate()
+function SignIn({ onSuccess }) {
+  const [email, setEmail] = React.useState('');
+  const [password, setPassword] = React.useState('');
+  const navigate = useNavigate();
 
-  async function login () {
+  async function login() {
     try {
       const response = await fetch('http://localhost:5005/admin/auth/login', {
         method: 'POST',
@@ -51,25 +58,52 @@ function SignIn ({ onSuccess }) {
   }
 
   return (
-    <>
-      <br />
-      <label htmlFor="email">Email:</label>
-      <input
-        id="email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-      />
-      <br />
-      <label htmlFor="password">Password:</label>
-      <input
-        id="password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-      />
-      <br />
-      <button onClick={login}>Login</button>
-    </>
-  )
+    <Container maxWidth="xs">
+      <Box sx={{ mt: 8, mb: 4 }}>
+        <Typography variant="h4" align="center">
+          Sign In
+        </Typography>
+      </Box>
+      <Box
+        component="form"
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'stretch',
+          '& > :not(style)': { m: 1 },
+        }}
+      >
+        <TextField
+          id="email"
+          label="Email"
+          variant="outlined"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          fullWidth
+          required
+        />
+        <TextField
+          id="password"
+          label="Password"
+          variant="outlined"
+          type="password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          fullWidth
+          required
+        />
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={login}
+          fullWidth
+        >
+          Login
+        </Button>
+      </Box>
+    </Container>
+  );
 }
+
 
 export default SignIn
