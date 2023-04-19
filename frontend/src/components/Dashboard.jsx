@@ -46,7 +46,7 @@ const Dashboard = () => {
   const [showCsvUploadModal, setShowCsvUploadModal] = useState(false);
   const [newGameId, setNewGameId] = useState(null);
   const [newGameName, setNewGameName] = useState('');
-  const [selectedSession, setSelectedSession] = useState(null);
+  // const [selectedSession, setSelectedSession] = useState(null);
   const [openSessionList, setOpenSessionList] = useState({});
 
   const navigate = useNavigate()
@@ -179,7 +179,7 @@ const Dashboard = () => {
     data.forEach(async (row) => {
       console.log('row: ', row);
       const answersArray = Object.entries(row)
-        .filter(([key, value]) => key.startsWith("answer") && key.includes("_text") && value !== null)
+        .filter(([key, value]) => key.startsWith('answer') && key.includes('_text') && value !== null)
         .map(([key, value]) => ({
           text: value,
           correct: row[`${key.slice(0, -4)}correct`],
@@ -204,7 +204,7 @@ const Dashboard = () => {
     try {
       const gameData = { questions: updatedQuestions, name: newGameName, thumbnail: '' }
 
-      const uploadResponse = await api.put(`/admin/quiz/${gameId}`, gameData, {
+      await api.put(`/admin/quiz/${gameId}`, gameData, {
         headers: {
           'Content-type': 'application/json',
           Authorization: `Bearer ${token}`,
@@ -219,22 +219,22 @@ const Dashboard = () => {
 
   const validateCsvData = (data) => {
     const requiredFields = [
-      "type",
-      "question",
-      "time",
-      "points",
-      "media_type",
-      "media_url",
+      'type',
+      'question',
+      'time',
+      'points',
+      'media_type',
+      'media_url',
     ];
 
-    const validQuestionTypes = ["single", "multiple"];
-    const validMediaTypes = ["video", "image", "none"];
+    const validQuestionTypes = ['single', 'multiple'];
+    const validMediaTypes = ['video', 'image', 'none'];
 
-    for (let row of data) {
+    for (const row of data) {
       // Check if all required fields are present
-      for (let field of requiredFields) {
-        if (!row.hasOwnProperty(field)) {
-          return false;
+      for (const field of requiredFields) {
+        if (!Object.prototype.hasOwnProperty.call(row, field)) {
+          return false
         }
       }
 
@@ -276,7 +276,6 @@ const Dashboard = () => {
 
     return true;
   };
-
 
   const handleFileError = (err) => {
     window.alert('Error reading the CSV file: ' + err.message);
