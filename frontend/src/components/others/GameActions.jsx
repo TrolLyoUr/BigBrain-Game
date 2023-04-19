@@ -2,6 +2,7 @@ import api from '../../api';
 // import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2'
 
+
 const startGame = async (gameId, token, setCopyLink, setSessionId, setShowModal, setGameStatus) => {
   try {
     await api.post(

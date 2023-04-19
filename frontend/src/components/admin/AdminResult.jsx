@@ -8,6 +8,7 @@ import {
   Button,
   Typography,
 } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
 
 const AdminResult = () => {
   const { token } = useContext(AppContext)
@@ -16,10 +17,11 @@ const AdminResult = () => {
   const [results, setResults] = useState(null)
   const [showCalculationDetails, setShowCalculationDetails] = useState(false);
   const defaultPlayer = {
-    name: 'Default Player',
+    name: 'No player',
     answers: [],
   }
-  // Chart.register(Bar, Line)
+
+  const navigate = useNavigate()
 
   useEffect(() => {
     // valid token check
@@ -37,6 +39,8 @@ const AdminResult = () => {
 
   // fetch game status
   const fetchStatus = async () => {
+    console.log('fetching status')
+    console.log('gameStatus', gameStatus)
     try {
       const gameStatusData = await api.get(
         `/admin/session/${sessionId}/status`,
@@ -261,13 +265,34 @@ const AdminResult = () => {
     )
   }
 
+  const stopTheGame = async () => {
+    try {
+      await api.post(
+        `/admin/quiz/${gameId}/end`, {},
+        {
+          headers: {
+            'Content-type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+    } catch (error) {
+      console.log(error);
+    }
+
+    fetchStatus();
+  };
+
   return (
     <div>
       {gameStatus.results.active
         ? (
           <>
-            <button onClick={advanceToNextQuestion}>Next Question</button>
-            <Link to={'/Dashboard'}> Stop Game </Link>
+            <Button onClick={advanceToNextQuestion}>Next Question</Button>
+            <Button onClick={async () => {
+              stopTheGame();
+            }
+            }> Stop Game </Button>
           </>
         )
         : (
