@@ -80,10 +80,10 @@ const Dashboard = () => {
           gameResponse.data.id = game.id
 
           // Check game status
-          if (gameResponse.data.active) {
+          if (!gameResponse.data.active) {
             setGameStatus((prevGameStatus) => ({
               ...prevGameStatus,
-              [game.id]: gameResponse.data.active,
+              [game.id]: false,
             }));
           }
           return gameResponse.data
@@ -204,7 +204,7 @@ const Dashboard = () => {
     try {
       const gameData = { questions: updatedQuestions, name: newGameName, thumbnail: '' }
 
-      const uploadResponse = await api.put(`/admin/quiz/${gameId}`, gameData, {
+      await api.put(`/admin/quiz/${gameId}`, gameData, {
         headers: {
           'Content-type': 'application/json',
           Authorization: `Bearer ${token}`,
@@ -360,6 +360,7 @@ const Dashboard = () => {
   return (
     <Container>
       {console.log('gamesList: ', gamesList)}
+      {console.log('Gamestate: ', gameStatus)}
       <Box sx={{ my: 4 }}>
         <Typography variant="h4" component="h1">
           Dashboard
@@ -444,7 +445,7 @@ const Dashboard = () => {
                       </IconButton>
                     )}
                     {gameStatus[game.id] && (
-                      <AdminResultButton gameId={game.id} sessionId={sessionId} />
+                      <AdminResultButton gameId={game.id} sessionId={gameStatus[game.id]} />
                     )}
                     <IconButton onClick={() => toggleSessionList(game.id)}>
                       {openSessionList[game.id] ? <ExpandLess /> : <ExpandMore />}
