@@ -1,12 +1,20 @@
-import React, { useState, useEffect, useContext } from 'react'
-import api from '../../api'
-import { AppContext } from '../../App'
-import { useParams } from 'react-router-dom'
-// import { Chart } from 'chart.js'
-import { Bar, Line } from 'react-chartjs-2'
+import React, { useState, useEffect, useContext } from 'react';
+import api from '../../api';
+import { AppContext } from '../../App';
+import { useParams } from 'react-router-dom';
+import { Bar, Line } from 'react-chartjs-2';
 import {
   Button,
   Typography,
+  Container,
+  Box,
+  Table,
+  TableHead,
+  TableBody,
+  TableRow,
+  TableCell,
+  Paper,
+  CircularProgress,
 } from '@mui/material';
 
 const AdminResult = () => {
@@ -116,7 +124,7 @@ const AdminResult = () => {
   }
 
   // Calculate the score for each question
-  function calculateScores (results, questions) {
+  function calculateScores(results, questions) {
     return results.map((result, index) => {
       const question = questions[index];
       const timeLimit = question.time;
@@ -282,21 +290,32 @@ const AdminResult = () => {
   };
 
   return (
-    <div>
-      {gameStatus.results.active
-        ? (
-          <>
-            <Button onClick={advanceToNextQuestion}>Next Question</Button>
-            <Button onClick={async () => {
-              stopTheGame();
-            }
-            }> Stop Game </Button>
-          </>
-          )
-        : (
-            renderResults()
-          )}
-    </div>
-  )
-}
+    <Container>
+      <Box sx={{ my: 4 }}>
+        <Typography variant="h4" component="h1">
+          Game Progress
+        </Typography>
+        {gameStatus.results.active ? (
+          <Box sx={{ mt: 3 }}>
+            <Button variant="contained" color="primary" onClick={advanceToNextQuestion}>
+              Next Question
+            </Button>
+            <Button
+              variant="contained"
+              color="secondary"
+              onClick={async () => {
+                stopTheGame();
+              }}
+              sx={{ ml: 2 }}
+            >
+              Stop Game
+            </Button>
+          </Box>
+        ) : (
+          renderResults()
+        )}
+      </Box>
+    </Container>
+  );
+};
 export default AdminResult
